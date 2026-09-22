@@ -17,88 +17,173 @@ interface TextileCanvasProps {
   className?: string;
 }
 
-// Procedural Sculpted Fallback Figure (if GLB is loading or offline)
+// Anatomically Proportioned Faceless Figure
+// Proportions: standing female model, ~1.77m virtual scale
+// Structure: feet → calves → knees → thighs → hips → waist → ribcage → shoulders → neck stub
 function createSculptedFacelessFigure(): THREE.Group {
   const group = new THREE.Group();
-  const mat = new THREE.MeshStandardMaterial({
-    color: 0xf6f3ec,
-    roughness: 0.65,
-    metalness: 0.02,
+
+  const skinMat = new THREE.MeshStandardMaterial({
+    color: 0xf0ece4,
+    roughness: 0.72,
+    metalness: 0.0,
   });
 
-  const torsoGeo = new THREE.CylinderGeometry(0.18, 0.24, 1.4, 32, 16);
-  const pos = torsoGeo.attributes.position;
-  for (let i = 0; i < pos.count; i++) {
-    const y = pos.getY(i);
-    const x = pos.getX(i);
-    const z = pos.getZ(i);
-    if (y > 0.3) {
-      pos.setX(i, x * 0.7);
-      pos.setZ(i, z * 0.7);
-    } else if (y < 0.1 && y > -0.2) {
-      pos.setX(i, x * 0.85);
-      pos.setZ(i, z * 0.82);
-    }
-  }
-  torsoGeo.computeVertexNormals();
-  const torso = new THREE.Mesh(torsoGeo, mat);
-  torso.position.y = -0.15;
-  group.add(torso);
+  const addCylinder = (
+    rTop: number, rBot: number, h: number,
+    segs: number, yBase: number,
+    xOff = 0, zOff = 0, xRot = 0, zRot = 0,
+    mat: THREE.Material = skinMat
+  ) => {
+    const geo = new THREE.CylinderGeometry(rTop, rBot, h, segs, 4);
+    geo.computeVertexNormals();
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(xOff, yBase + h / 2, zOff);
+    mesh.rotation.x = xRot;
+    mesh.rotation.z = zRot;
+    group.add(mesh);
+    return mesh;
+  };
 
-  const headGeo = new THREE.SphereGeometry(0.11, 24, 24);
-  headGeo.scale(0.85, 1.25, 0.95);
-  const head = new THREE.Mesh(headGeo, mat);
-  head.position.set(0, 0.76, 0.02);
-  group.add(head);
+  const addSphere = (r: number, y: number, xOff = 0, zOff = 0, scaleY = 1.0, mat: THREE.Material = skinMat) => {
+    const geo = new THREE.SphereGeometry(r, 24, 20);
+    geo.scale(1, scaleY, 1);
+    geo.computeVertexNormals();
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(xOff, y, zOff);
+    group.add(mesh);
+    return mesh;
+  };
+
+  // ── FEET (small, anchored below ankle) ──
+  addSphere(0.038, -0.92, -0.055, 0.025, 0.45);  // Left foot
+  addSphere(0.038, -0.92,  0.055, 0.025, 0.45);  // Right foot
+
+  // ── CALVES ──
+  addCylinder(0.052, 0.046, 0.28, 20, -0.91, -0.055); // Left calf
+  addCylinder(0.052, 0.046, 0.28, 20, -0.91,  0.055); // Right calf
+
+  // ── KNEES ──
+  addSphere(0.055, -0.63, -0.055, 0.0, 1.0);  // Left knee
+  addSphere(0.055, -0.63,  0.055, 0.0, 1.0);  // Right knee
+
+  // ── THIGHS ──
+  addCylinder(0.075, 0.060, 0.30, 24, -0.63, -0.055); // Left thigh
+  addCylinder(0.075, 0.060, 0.30, 24, -0.63,  0.055); // Right thigh
+
+  // ── PELVIS / HIP JUNCTION (where thighs merge) ──
+  // Wide ellipsoid spanning hip width
+  const pelvisGeo = new THREE.SphereGeometry(0.145, 32, 20);
+  pelvisGeo.scale(1.2, 0.72, 0.92);
+  pelvisGeo.computeVertexNormals();
+  const pelvis = new THREE.Mesh(pelvisGeo, skinMat);
+  pelvis.position.set(0, -0.33, 0.006);
+  group.add(pelvis);
+
+  // ── WAIST — narrow, smooth taper ──
+  const waistGeo = new THREE.CylinderGeometry(0.110, 0.148, 0.18, 36, 6);
+  // Sculpt waist taper inward
+  const wPos = waistGeo.attributes.position;
+  for (let i = 0; i < wPos.count; i++) {
+    const y = wPos.getY(i); // -0.09 to +0.09
+    const t = (y + 0.09) / 0.18; // 0 = bottom, 1 = top
+    const squeeze = 1.0 - Math.sin(t * Math.PI) * 0.08;
+    wPos.setX(i, wPos.getX(i) * squeeze);
+    wPos.setZ(i, wPos.getZ(i) * squeeze);
+  }
+  waistGeo.computeVertexNormals();
+  const waist = new THREE.Mesh(waistGeo, skinMat);
+  waist.position.set(0, -0.14, 0.002);
+  group.add(waist);
+
+  // ── RIBCAGE — flares naturally upward from waist ──
+  const ribGeo = new THREE.CylinderGeometry(0.152, 0.118, 0.26, 36, 6);
+  const rPos = ribGeo.attributes.position;
+  for (let i = 0; i < rPos.count; i++) {
+    const y = rPos.getY(i); // -0.13 to +0.13
+    const t = (y + 0.13) / 0.26;
+    // Slight front-projection at mid-ribcage for bust depth
+    const bustFactor = Math.sin(t * Math.PI) * 0.022;
+    rPos.setZ(i, rPos.getZ(i) + (rPos.getZ(i) > 0 ? bustFactor : 0));
+  }
+  ribGeo.computeVertexNormals();
+  const ribcage = new THREE.Mesh(ribGeo, skinMat);
+  ribcage.position.set(0, 0.085, 0.01);
+  group.add(ribcage);
+
+  // ── BUST PROJECTION (soft, anatomically subtle) ──
+  addSphere(0.068, 0.195, -0.055, 0.09, 0.85);  // Left bust
+  addSphere(0.068, 0.195,  0.055, 0.09, 0.85);  // Right bust
+
+  // ── SHOULDERS ── (clavicle width ~0.38m)
+  addSphere(0.065, 0.30, -0.165, 0.0, 0.82); // Left shoulder ball
+  addSphere(0.065, 0.30,  0.165, 0.0, 0.82); // Right shoulder ball
+
+  // ── UPPER ARMS (hanging naturally, slight inward angle) ──
+  addCylinder(0.042, 0.036, 0.20, 16, 0.21, -0.195, 0.0, 0.0, 0.12);  // Left upper arm
+  addCylinder(0.042, 0.036, 0.20, 16, 0.21,  0.195, 0.0, 0.0, -0.12); // Right upper arm
+
+  // ── NECK STUMP (no head — faceless editorial aesthetic) ──
+  addCylinder(0.052, 0.062, 0.10, 20, 0.37, 0, -0.005);
 
   return group;
 }
+
 
 // Sculpted Tailored Silk Blouse with boat neckline and tailored sleeves
 function createTailoredBlouseMesh(material: THREE.Material): THREE.Group {
   const group = new THREE.Group();
 
-  // Fitted Bodice: covers ribcage (y = 0.20) to clavicle (y = 0.44)
-  const radialSegs = 48;
-  const heightSegs = 16;
-  const bodiceGeo = new THREE.CylinderGeometry(0.184, 0.172, 0.24, radialSegs, heightSegs, true);
+  // Fitted Bodice: spans from ribcage bottom (y=-0.05) up to clavicle (y=0.215)
+  // Height = 0.265, centered at y = 0.0825
+  const radialSegs = 52;
+  const heightSegs = 20;
+  // rTop matches shoulder width, rBot matches waist flare at blouse hem
+  const bodiceGeo = new THREE.CylinderGeometry(0.158, 0.145, 0.265, radialSegs, heightSegs, true);
   const pos = bodiceGeo.attributes.position;
 
   for (let i = 0; i < pos.count; i++) {
-    const y = pos.getY(i);
+    const y = pos.getY(i); // -0.1325 to +0.1325 (local coords)
     const x = pos.getX(i);
     const z = pos.getZ(i);
 
-    // Subtle bust apex projection
-    if (z > 0 && y > -0.04 && y < 0.10) {
-      const bustFactor = Math.sin(((y + 0.04) / 0.14) * Math.PI);
-      pos.setZ(i, z + bustFactor * 0.022);
+    // Bust projection at mid-bodice (local y = 0 to 0.06)
+    if (z > 0 && y > -0.04 && y < 0.08) {
+      const bustFactor = Math.sin(((y + 0.04) / 0.12) * Math.PI);
+      pos.setZ(i, z + bustFactor * 0.026);
     }
 
-    // Sculpted boat neckline dip at center-front
-    if (y > 0.06 && z > 0) {
-      const neckDip = (1.0 - Math.min(Math.abs(x) / 0.12, 1.0)) * 0.038;
+    // Waist pinch at lower bodice (local y = -0.08 to -0.13)
+    if (y < -0.06) {
+      const pinch = (-y - 0.06) / 0.07;
+      pos.setX(i, x * (1.0 - pinch * 0.06));
+      pos.setZ(i, pos.getZ(i) * (1.0 - pinch * 0.05));
+    }
+
+    // Boat neckline dip at top front center
+    if (y > 0.08 && z > 0) {
+      const neckDip = (1.0 - Math.min(Math.abs(x) / 0.13, 1.0)) * 0.042;
       pos.setY(i, y - neckDip);
     }
   }
   bodiceGeo.computeVertexNormals();
-  bodiceGeo.translate(0, 0.32, 0.012);
+  // Center the bodice at y = 0.0825 so it spans -0.05 to 0.215
+  bodiceGeo.translate(0, 0.0825, 0.012);
 
   const bodice = new THREE.Mesh(bodiceGeo, material);
   group.add(bodice);
 
-  // Left short sleeve
-  const sleeveGeoL = new THREE.CylinderGeometry(0.062, 0.056, 0.14, 24);
-  sleeveGeoL.rotateZ(Math.PI * 0.12);
-  sleeveGeoL.translate(-0.232, 0.38, 0.01);
+  // Short sleeves — positioned at shoulder ball centers (y=0.30, x=±0.165)
+  const sleeveGeoL = new THREE.CylinderGeometry(0.055, 0.048, 0.13, 24);
+  sleeveGeoL.rotateZ(Math.PI * 0.16);
+  sleeveGeoL.translate(-0.205, 0.298, 0.005);
   sleeveGeoL.computeVertexNormals();
   const sleeveL = new THREE.Mesh(sleeveGeoL, material);
   group.add(sleeveL);
 
-  // Right short sleeve
-  const sleeveGeoR = new THREE.CylinderGeometry(0.062, 0.056, 0.14, 24);
-  sleeveGeoR.rotateZ(-Math.PI * 0.12);
-  sleeveGeoR.translate(0.232, 0.38, 0.01);
+  const sleeveGeoR = new THREE.CylinderGeometry(0.055, 0.048, 0.13, 24);
+  sleeveGeoR.rotateZ(-Math.PI * 0.16);
+  sleeveGeoR.translate(0.205, 0.298, 0.005);
   sleeveGeoR.computeVertexNormals();
   const sleeveR = new THREE.Mesh(sleeveGeoR, material);
   group.add(sleeveR);
@@ -106,14 +191,20 @@ function createTailoredBlouseMesh(material: THREE.Material): THREE.Group {
   return group;
 }
 
-// Multi-Pleated Diagonal Pallu Drape Sash layered proudly OVER the blouse
+
+// Multi-Pleated Diagonal Pallu Drape Sash layered OVER the blouse
 function createDiagonalSashGeometry(style: DrapeStyle = "nivi"): THREE.BufferGeometry {
-  const lengthSegments = 54;
-  const widthSegments = 16;
+  const lengthSegments = 60;
+  const widthSegments = 18;
   const geo = new THREE.BufferGeometry();
   const positions: number[] = [];
   const uvs: number[] = [];
   const indices: number[] = [];
+
+  // Y range: waist tuck (y=-0.04) → shoulder peak (y=0.315)
+  const yBottom = -0.04;
+  const yTop = 0.315;
+  const yRange = yTop - yBottom;
 
   for (let i = 0; i <= lengthSegments; i++) {
     const v = i / lengthSegments;
@@ -123,32 +214,31 @@ function createDiagonalSashGeometry(style: DrapeStyle = "nivi"): THREE.BufferGeo
     let dAngle: number;
 
     if (style === "seedha") {
-      // Royal Seedha: sweeps from left waist across ribcage to right shoulder
-      y = THREE.MathUtils.lerp(0.14, 0.522, v);
+      y = THREE.MathUtils.lerp(yBottom, yTop, v);
       centerAngle = THREE.MathUtils.lerp(2.70, 0.42, v);
-      dAngle = THREE.MathUtils.lerp(0.52, 0.38, v);
+      dAngle = THREE.MathUtils.lerp(0.50, 0.36, v);
     } else if (style === "cape") {
-      // Atelier Cape: bilateral collar mantle
-      y = THREE.MathUtils.lerp(0.38, 0.522, v);
+      y = THREE.MathUtils.lerp(0.20, yTop, v);
       centerAngle = Math.PI * 0.5;
-      dAngle = THREE.MathUtils.lerp(1.15, 0.52, v);
+      dAngle = THREE.MathUtils.lerp(1.10, 0.50, v);
     } else {
-      // Classic Nivi: sweeps from right waist across bust apex over left shoulder
-      y = THREE.MathUtils.lerp(0.14, 0.522, v);
+      // Classic Nivi: from waist right, sweeping across bust to left shoulder
+      y = THREE.MathUtils.lerp(yBottom, yTop, v);
       centerAngle = THREE.MathUtils.lerp(0.40, 2.70, v);
-      dAngle = THREE.MathUtils.lerp(0.52, 0.38, v);
+      dAngle = THREE.MathUtils.lerp(0.50, 0.36, v);
     }
 
-    const vy = (y - 0.14) / 0.382;
+    const vy = (y - yBottom) / yRange;
 
-    // Torso radius sized cleanly OVER the tailored blouse
-    let rx = THREE.MathUtils.lerp(0.190, 0.198, vy);
-    let rz = THREE.MathUtils.lerp(0.165, 0.185, vy);
+    // Blouse outer radius: rBot matches blouse hem (~0.152), rTop matches shoulder (~0.168)
+    let rx = THREE.MathUtils.lerp(0.162, 0.172, vy);
+    let rz = THREE.MathUtils.lerp(0.150, 0.168, vy);
 
-    if (y > 0.20 && y < 0.44) {
-      const bustProg = Math.sin(((y - 0.20) / 0.24) * Math.PI);
-      rz += bustProg * 0.038;
-      rx += bustProg * 0.008;
+    // Bust projection over the blouse (y = 0.04 to y = 0.20)
+    if (y > 0.04 && y < 0.20) {
+      const bustProg = Math.sin(((y - 0.04) / 0.16) * Math.PI);
+      rz += bustProg * 0.042;
+      rx += bustProg * 0.010;
     }
 
     for (let j = 0; j <= widthSegments; j++) {
@@ -160,11 +250,11 @@ function createDiagonalSashGeometry(style: DrapeStyle = "nivi"): THREE.BufferGeo
 
       // 3 distinct architectural pleats with folded crests
       const pleat = Math.sin(u * Math.PI * 6.0) * 0.008;
-      const r = 1.0 + 0.014 + pleat;
+      const r = 1.0 + 0.016 + pleat;
 
       const px = cosA * rx * r;
       const pz = Math.max(sinA * rz * r, -0.04);
-      const py = y + (u - 0.5) * 0.024;
+      const py = y + (u - 0.5) * 0.022;
 
       positions.push(px, py, pz);
       uvs.push(u, v);
@@ -191,11 +281,15 @@ function createDiagonalSashGeometry(style: DrapeStyle = "nivi"): THREE.BufferGeo
   return geo;
 }
 
+
 // Procedural Nivi Pleated Saree Skirt tailored to human model anatomy with hip wrap tension
 function createPleatedSkirtGeometry(pleatCount = 7): THREE.BufferGeometry {
-  const height = 1.08; // y = 0.16 down to y = -0.92
-  const radialSegments = 88;
-  const heightSegments = 32;
+  // Skirt spans from waistband (y = -0.055) down to floor (y = -0.92)
+  const skirtTop = -0.055;
+  const skirtBottom = -0.92;
+  const height = skirtTop - skirtBottom; // 0.865
+  const radialSegments = 92;
+  const heightSegments = 36;
 
   const geo = new THREE.BufferGeometry();
   const positions: number[] = [];
@@ -204,13 +298,15 @@ function createPleatedSkirtGeometry(pleatCount = 7): THREE.BufferGeometry {
 
   for (let y = 0; y <= heightSegments; y++) {
     const v = y / heightSegments;
-    const py = 0.16 - v * height;
+    const py = skirtTop - v * height;
 
     let currentRadius: number;
-    if (v < 0.22) {
-      currentRadius = THREE.MathUtils.lerp(0.180, 0.228, v / 0.22);
+    if (v < 0.20) {
+      // Hip wrap: waistband tight, flaring to hip width
+      currentRadius = THREE.MathUtils.lerp(0.165, 0.242, v / 0.20);
     } else {
-      currentRadius = THREE.MathUtils.lerp(0.228, 0.315, (v - 0.22) / 0.78);
+      // Skirt body: gradual A-line flare to floor sweep
+      currentRadius = THREE.MathUtils.lerp(0.242, 0.335, (v - 0.20) / 0.80);
     }
 
     // Subtle diagonal hip wrap tension lines across upper skirt (v < 0.25)
@@ -231,7 +327,7 @@ function createPleatedSkirtGeometry(pleatCount = 7): THREE.BufferGeometry {
         const rawWave = Math.sin(pleatPhase * Math.PI * pleatCount);
         // Sharpened knife pleat with asymmetric fold face
         const wave = Math.sign(rawWave) * Math.pow(Math.abs(rawWave), 0.72);
-        pleatOffset = wave * (0.014 + v * 0.034);
+        pleatOffset = wave * (0.014 + v * 0.038);
       }
 
       const r = currentRadius + pleatOffset + hipTension;
@@ -242,6 +338,7 @@ function createPleatedSkirtGeometry(pleatCount = 7): THREE.BufferGeometry {
       uvs.push(u, v);
     }
   }
+
 
   for (let y = 0; y < heightSegments; y++) {
     for (let x = 0; x < radialSegments; x++) {
@@ -265,11 +362,13 @@ function createPleatedSkirtGeometry(pleatCount = 7): THREE.BufferGeometry {
 
 // Tailored Saree Waistband Cinch (Tuck Band)
 function createWaistbandGeometry(): THREE.BufferGeometry {
-  const geo = new THREE.CylinderGeometry(0.185, 0.184, 0.035, 48, 1, true);
-  geo.translate(0, 0.155, 0.008);
+  // Waist sits at y ≈ -0.05 on the new anatomical figure (bottom of blouse hem)
+  const geo = new THREE.CylinderGeometry(0.152, 0.150, 0.030, 48, 1, true);
+  geo.translate(0, -0.055, 0.008);
   geo.computeVertexNormals();
   return geo;
 }
+
 
 function isWebGLAvailable(): boolean {
   if (typeof window === "undefined") return true;

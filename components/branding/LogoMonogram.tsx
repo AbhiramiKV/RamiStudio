@@ -14,112 +14,101 @@ export const LogoMonogram: React.FC<LogoProps> = ({
   ...props
 }) => {
   const isMonochrome = monochrome || variant === "solid";
+  const uid = "rami-mono";
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 120 120"
+      viewBox="0 0 100 100"
       width={size}
       height={size}
       fill="none"
-      aria-label="Rami Studio Sovereign Monogram"
-      className={`group transition-all duration-500 hover:scale-[1.04] shrink-0 select-none ${className}`}
+      aria-label="Rami Studio"
+      className={`transition-all duration-500 hover:scale-[1.04] shrink-0 select-none ${className}`}
       {...props}
     >
       <defs>
-        {/* Imperial Antique Matte Zari Gradient */}
-        <linearGradient id="ramiImperialZari" x1="15%" y1="10%" x2="90%" y2="90%">
-          <stop offset="0%" stopColor="#DFBF76" />
-          <stop offset="35%" stopColor="#C5A059" />
-          <stop offset="70%" stopColor="#AD8740" />
-          <stop offset="100%" stopColor="#8E6A29" />
+        {/* Antique matte zari — warm champagne gold */}
+        <linearGradient id={`${uid}-zari`} x1="10%" y1="10%" x2="90%" y2="92%">
+          <stop offset="0%" stopColor="#E8CC88" />
+          <stop offset="40%" stopColor="#C5A059" />
+          <stop offset="100%" stopColor="#9A7535" />
         </linearGradient>
 
-        {/* Deep Obsidian Silk Sheen */}
-        <linearGradient id="ramiObsidianSilk" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#2C2C28" />
-          <stop offset="50%" stopColor="#1A1A18" />
-          <stop offset="100%" stopColor="#0F0F0E" />
+        {/* Deep obsidian ink for the R stroke */}
+        <linearGradient id={`${uid}-ink`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#2A2A26" />
+          <stop offset="100%" stopColor="#111110" />
         </linearGradient>
 
-        {/* Subtle Zari Shadow for 3D Over-Under Loom Depth */}
-        <filter id="zariLoomShadow" x="-15%" y="-15%" width="130%" height="130%">
-          <feDropShadow dx="0.5" dy="1" stdDeviation="1" floodColor="#000000" floodOpacity="0.25" />
+        {/* Soft glow filter for the S ribbon */}
+        <filter id={`${uid}-glow`} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="0.6" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
         </filter>
       </defs>
 
-      {/* ── BACKGROUND HERALDRY EMBLEM / CARTUCHE (OPTIONAL SUBTLE LUXURY FRAME) ── */}
+      {/* ── Hairline cartouche — barely-there luxury frame ── */}
       <rect
-        x="6"
-        y="6"
-        width="108"
-        height="108"
-        rx="2"
-        stroke={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"}
-        strokeWidth="1"
-        strokeOpacity="0.3"
+        x="5" y="5" width="90" height="90" rx="1.5"
+        stroke={isMonochrome ? "currentColor" : `url(#${uid}-zari)`}
+        strokeWidth="0.6"
+        strokeOpacity="0.28"
         fill="none"
       />
-      {/* Corner Loom Harness Notches */}
-      <line x1="6" y1="18" x2="6" y2="6" stroke={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} strokeWidth="2.5" />
-      <line x1="6" y1="6" x2="18" y2="6" stroke={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} strokeWidth="2.5" />
-      <line x1="114" y1="18" x2="114" y2="6" stroke={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} strokeWidth="2.5" />
-      <line x1="114" y1="6" x2="102" y2="6" stroke={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} strokeWidth="2.5" />
-      <line x1="6" y1="102" x2="6" y2="114" stroke={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} strokeWidth="2.5" />
-      <line x1="6" y1="114" x2="18" y2="114" stroke={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} strokeWidth="2.5" />
-      <line x1="114" y1="102" x2="114" y2="114" stroke={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} strokeWidth="2.5" />
-      <line x1="114" y1="114" x2="102" y2="114" stroke={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} strokeWidth="2.5" />
 
-      {/* ── 1. BOLD ROMAN 'R' ARCHITECTURE (CHISELED PILLARS & SERIFS) ── */}
-      {/* Vertical Main Stem with Bracketed Imperial Serifs */}
+      {/* ── THE R ── */}
+      {/* Vertical stem */}
       <path
-        d="M 22 22 H 42 V 28 H 36 V 92 H 44 V 98 H 20 V 92 H 28 V 28 H 22 Z"
-        fill={isMonochrome ? "currentColor" : "url(#ramiObsidianSilk)"}
+        d="M 20 18 L 26 18 L 26 82 L 20 82 Z"
+        fill={isMonochrome ? "currentColor" : `url(#${uid}-ink)`}
+      />
+      {/* Top bracket serif */}
+      <path
+        d="M 16 18 L 30 18 L 30 21.5 L 16 21.5 Z"
+        fill={isMonochrome ? "currentColor" : `url(#${uid}-ink)`}
+      />
+      {/* Bottom bracket serif */}
+      <path
+        d="M 16 78.5 L 30 78.5 L 30 82 L 16 82 Z"
+        fill={isMonochrome ? "currentColor" : `url(#${uid}-ink)`}
+      />
+      {/* Upper bowl */}
+      <path
+        d="M 26 18 L 58 18 C 77 18 84 27 84 37 C 84 47 77 56 58 56 L 26 56 L 26 50 L 56 50 C 69 50 76 44.5 76 37 C 76 29.5 69 24 56 24 L 26 24 Z"
+        fill={isMonochrome ? "currentColor" : `url(#${uid}-ink)`}
+      />
+      {/* Diagonal leg */}
+      <path
+        d="M 44 54 C 52 54 60 60 67 70 L 79 84 L 73 84 L 61 69 C 55 61 47 57 40 57 Z"
+        fill={isMonochrome ? "currentColor" : `url(#${uid}-ink)`}
       />
 
-      {/* Noble Roman 'R' Upper Bowl with Chiseled Contrast */}
-      <path
-        d="M 36 24 H 62 C 78 24 88 32 88 44 C 88 56 78 64 62 64 H 36 V 56 H 60 C 71 56 77 52 77 44 C 77 36 71 32 60 32 H 36 Z"
-        fill={isMonochrome ? "currentColor" : "url(#ramiObsidianSilk)"}
-      />
-
-      {/* ── 2. SCULPTURAL SILK 'R' DRAPE LEG (OUTWARD PALLU SWAY) ── */}
-      {/* Saree Pallu Tail: Dynamic sweeping calligraphic leg terminating in an upturned finial */}
-      <path
-        d="M 48 59 C 55 59 62 65 67 73 L 83 92 C 87 97 91 98 98 98 V 92 C 94 92 91 90 87 85 L 72 67 C 67 60 59 55 48 55 Z"
-        fill={isMonochrome ? "currentColor" : "url(#ramiObsidianSilk)"}
-      />
-
-      {/* ── 3. INTERTWINED HAUTE COUTURE 'S' (PURE MATTE ZARI RIBBON) ── */}
-      {/* The 'S' ribbon physically weaves over and under the 'R' like warp & weft threads */}
-      <g filter={isMonochrome ? undefined : "url(#zariLoomShadow)"}>
-        {/* Upper Arch of 'S' - Sweeps over the crown of the R Bowl */}
+      {/* ── THE S — fluid antique zari ribbon ── */}
+      <g filter={isMonochrome ? undefined : `url(#${uid}-glow)`}>
         <path
-          d="M 88 28 C 84 19 72 16 58 19 C 47 21 44 28 47 34 C 49 38 54 41 62 44 L 72 48 C 84 53 91 61 90 73 C 89 85 78 94 62 96 C 48 98 39 91 38 84 H 45 C 46 88 52 91 62 90 C 72 89 80 84 81 74 C 82 65 76 60 66 56 L 56 52 C 45 47 40 40 41 31 C 42 20 53 14 66 14 C 79 14 91 19 93 28 Z"
-          fill={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"}
+          d="M 80 28 C 77 19 67 14 55 16 C 44 17.5 39 24 41 31 C 43 36 48 40 57 44 L 66 48 C 74 52 79 58 78 66 C 77 74 70 80 60 81 C 51 82 44 78 43 72 L 49 72 C 50 75.5 54 78 61 77 C 68 76 72 71 72 65 C 72 59 67 55 59 51 L 50 47 C 41 43 36 37 37 30 C 38 21 47 12 60 11 C 73 10 83 17 84 28 Z"
+          fill={isMonochrome ? "currentColor" : `url(#${uid}-zari)`}
+          opacity="0.97"
         />
       </g>
 
-      {/* ── 4. WARP-WEFT RELIEF NOTCH ACCENTS (INTERLOCKING ILLUSION) ── */}
-      {/* Negative relief cutouts across intersection axes */}
-      <rect x="33" y="47" width="6" height="3" fill="#F9F8F6" transform="rotate(-15 36 48)" opacity="0.9" />
-      <rect x="56" y="58" width="8" height="3" fill="#F9F8F6" transform="rotate(25 60 59)" opacity="0.9" />
+      {/* ── Weft intersection notch — loom-interlace illusion ── */}
+      <path
+        d="M 57 57 L 64 62 L 62 65 L 55 60 Z"
+        fill={isMonochrome ? "white" : "#F9F8F6"}
+        opacity="0.88"
+      />
 
-      {/* ── 5. HAUTE JOAILLERIE WEFT DIAMOND (THE MASTER-LOOM EYELET) ── */}
-      <g transform="translate(60, 59)">
-        {/* Outer Radiant Zari Diamond */}
-        <path
-          d="M 0 -5 L 4 0 L 0 5 L -4 0 Z"
-          fill={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"}
-        />
-        {/* Core Obsidian Micro-Dot */}
-        <circle cx="0" cy="0" r="1.3" fill="#1A1A18" />
-      </g>
-
-      {/* Cardinal Alignment Pips (Guilloché Hallmark Accents) */}
-      <circle cx="60" cy="9" r="1.5" fill={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} />
-      <circle cx="60" cy="111" r="1.5" fill={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} />
-      <circle cx="9" cy="60" r="1.5" fill={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} />
-      <circle cx="111" cy="60" r="1.5" fill={isMonochrome ? "currentColor" : "url(#ramiImperialZari)"} />
+      {/* ── Joaillerie pivot diamond — master loom eyelet ── */}
+      <path
+        d="M 52 49 L 55 53 L 52 57 L 49 53 Z"
+        fill={isMonochrome ? "currentColor" : `url(#${uid}-zari)`}
+        opacity="0.92"
+      />
     </svg>
   );
 };

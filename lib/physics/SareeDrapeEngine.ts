@@ -13,9 +13,9 @@ export class SareeDrapeEngine {
   public pleatCount: number = 7;
   public fabricWeight: number = 210;
 
-  // Pallu Verlet Simulation Grid
-  public gridW = 18;
-  public gridH = 26;
+  // Pallu Verlet Simulation Grid — 22×32 for smoother silk folds
+  public gridW = 22;
+  public gridH = 32;
   public numParticles: number;
   public pos: Float32Array;
   public prevPos: Float32Array;
@@ -29,13 +29,14 @@ export class SareeDrapeEngine {
   public grabVelocity = new THREE.Vector3();
   private lastGrabPos = new THREE.Vector3();
 
-  // Model Collision Dimensions (Proportioned to 1.77m human model centered at y = -0.9)
-  public torsoRadiusX = 0.21;
-  public torsoRadiusZ = 0.16;
-  public hipRadiusX = 0.23;
-  public hipRadiusZ = 0.17;
+  // Model Collision Dimensions (Proportioned to anatomical faceless figure)
+  public torsoRadiusX = 0.22;
+  public torsoRadiusZ = 0.17;
+  public hipRadiusX = 0.25;
+  public hipRadiusZ = 0.19;
 
   private time = 0;
+
 
   constructor(options?: Partial<DrapeEngineOptions>) {
     if (options?.pleatCount) this.pleatCount = options.pleatCount;
@@ -257,9 +258,14 @@ export class SareeDrapeEngine {
     const gravity = -9.8 * (0.45 + normWeight * 0.55);
     const damping = 0.982 - normWeight * 0.005;
 
-    // Ambient flutter + aerodynamic air drag from turntable rotation
+    // Ambient flutter — primary oscillation + secondary slow frequency for organic motion
     const rotWind = -angularVelocity * 2.8;
-    const wind = (Math.sin(this.time * 2.2) * 0.12 + rotWind) * (1 - normWeight * 0.35);
+    const wind = (
+      Math.sin(this.time * 2.2) * 0.09 +
+      Math.sin(this.time * 0.71) * 0.04 +
+      rotWind
+    ) * (1 - normWeight * 0.35);
+
 
     // 1. Verlet Integration
     for (let i = 0; i < this.numParticles; i++) {
@@ -294,9 +300,9 @@ export class SareeDrapeEngine {
       this.pos[idx + 2] = pz + vz + az * dtSq;
     }
 
-    // 2. Constraints Relaxation (3 iterations)
+    // 2. Constraints Relaxation (5 iterations — smoother silk cloth)
     const numConstraints = this.constraints.length;
-    for (let pass = 0; pass < 3; pass++) {
+    for (let pass = 0; pass < 5; pass++) {
       for (let c = 0; c < numConstraints; c++) {
         const { p1, p2, restDist, stiffness } = this.constraints[c];
         const idx1 = p1 * 3;
