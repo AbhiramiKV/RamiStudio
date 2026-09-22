@@ -1,27 +1,26 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
+const getIsDesktopPointer = () => {
+  if (typeof window === "undefined") return false;
+  const isTouchDevice =
+    window.matchMedia("(pointer: coarse), (hover: none)").matches ||
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0;
+  return !isTouchDevice;
+};
 
 export const MagneticCursor: React.FC = () => {
+  const isDesktop = useSyncExternalStore(emptySubscribe, getIsDesktopPointer, () => false);
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
   const [cursorText, setCursorText] = useState<string>("");
   const [isActive, setIsActive] = useState<boolean>(false);
-  const [mounted, setMounted] = useState<boolean>(false);
-  const [isTouch, setIsTouch] = useState<boolean>(false);
 
   useEffect(() => {
-    setMounted(true);
-    // Detect touch device / coarse pointer
-    const isTouchDevice =
-      window.matchMedia("(pointer: coarse), (hover: none)").matches ||
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0;
-
-    if (isTouchDevice) {
-      setIsTouch(true);
-      return;
-    }
+    if (!isDesktop) return;
 
     let mouseX = -100;
     let mouseY = -100;
@@ -75,9 +74,9 @@ export const MagneticCursor: React.FC = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isDesktop]);
 
-  if (!mounted || isTouch) return null;
+  if (!isDesktop) return null;
 
   return (
     <>

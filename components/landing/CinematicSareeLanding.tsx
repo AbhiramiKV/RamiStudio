@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { LogoMonogram } from "@/components/branding/LogoMonogram";
-import { LogoWordmark } from "@/components/branding/LogoWordmark";
 
 export const CinematicSareeLanding: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(true);
@@ -77,7 +76,7 @@ export const CinematicSareeLanding: React.FC = () => {
         powerPreference: "high-performance",
       });
     } catch {
-      setVisible(false);
+      setTimeout(() => setVisible(false), 0);
       return;
     }
 
@@ -258,7 +257,7 @@ export const CinematicSareeLanding: React.FC = () => {
     scene.add(dust);
 
     // 5. Render Loop
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
 
     const animate = () => {
       animationFrameRef.current = requestAnimationFrame(animate);

@@ -121,7 +121,6 @@ export class ClothPhysicsSimulator {
     for (let i = 0; i < this.numParticles; i++) {
       const idx = i * 3;
       const x = i % this.w;
-      const y = Math.floor(i / this.w);
 
       const px = this.origPos[idx];
       const py = this.origPos[idx + 1];

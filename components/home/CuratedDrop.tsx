@@ -5,12 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { SAREE_COLLECTION } from "@/lib/catalogData";
 import { useCartStore } from "@/lib/stores/cartStore";
-import { ArrowRight, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 export const CuratedDrop: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const { formatPrice, addItem } = useCartStore();
+  const { formatPrice } = useCartStore();
 
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
@@ -36,16 +36,16 @@ export const CuratedDrop: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div>
             <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-text-tertiary block mb-2">
-              The Curated Drop · Autumn / Winter 2026
+              The Master Loom Archive · Autumn / Winter 2026
             </span>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight text-text-primary">
-              Limited Silhouettes
+              Limited Handloom Heirlooms
             </h2>
           </div>
 
           <div className="flex items-center gap-6">
             <p className="text-xs font-mono text-text-secondary uppercase tracking-widest hidden sm:block">
-              {SAREE_COLLECTION.length} MASTERPIECES ARCHIVED
+              {SAREE_COLLECTION.length} SINGLE-BATCH LOOM EDITIONS
             </p>
 
             {/* Navigation Arrows */}
@@ -109,40 +109,53 @@ export const CuratedDrop: React.FC = () => {
                   )}
                 </div>
 
-                <div className="absolute top-4 right-4 pointer-events-none">
-                  <span className="text-[10px] font-mono tracking-widest text-text-secondary bg-canvas-base/85 backdrop-blur-md px-2.5 py-1 border border-surface-border">
+                <div className="absolute top-4 right-4 pointer-events-none flex flex-col items-end gap-1">
+                  <span className="text-[10px] font-mono tracking-widest text-text-primary bg-canvas-base/85 backdrop-blur-md px-2.5 py-1 border border-surface-border">
+                    {saree.specs.weightGrams}g
+                  </span>
+                  <span className="text-[9px] font-mono tracking-widest text-text-tertiary bg-canvas-base/85 backdrop-blur-md px-2 py-0.5 border border-surface-border">
                     {saree.specs.gsm} GSM
                   </span>
                 </div>
 
-                {/* Quick Add to Bag Trigger - Always accessible on touch screens */}
-                <button
-                  onClick={() => addItem(saree, saree.colorways[0])}
-                  className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-canvas-base/90 backdrop-blur-md text-text-primary p-3 min-w-[44px] min-h-[44px] flex items-center justify-center border border-surface-border hover:bg-accent-zari hover:text-text-primary transition-all duration-300 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 shadow-md"
-                  aria-label={`Quick add ${saree.title} to bag`}
-                  data-cursor="ADD"
+                {/* Direct View Saree Trigger */}
+                <Link
+                  href={`/sarees/${saree.slug}`}
+                  className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-canvas-base/90 backdrop-blur-md text-text-primary px-3.5 py-2 text-[10px] font-mono tracking-widest uppercase flex items-center gap-1.5 border border-surface-border hover:bg-accent-zari hover:text-text-primary transition-all duration-300 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 shadow-md"
+                  aria-label={`View ${saree.title}`}
+                  data-cursor="INSPECT"
                 >
-                  <Plus className="w-4 h-4" />
-                </button>
+                  <span>INSPECT WEAVE</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
               </div>
 
               {/* Text Meta */}
               <div className="pt-6 space-y-2">
                 <div className="flex items-baseline justify-between">
-                  <Link
-                    href={`/sarees/${saree.slug}`}
-                    className="font-serif text-2xl text-text-primary group-hover:underline transition-all"
-                  >
-                    {saree.title}
-                  </Link>
+                  <div>
+                    <Link
+                      href={`/sarees/${saree.slug}`}
+                      className="font-serif text-2xl text-text-primary group-hover:underline transition-all"
+                    >
+                      {saree.title}
+                    </Link>
+                    <div className="text-xs font-mono text-accent-zari-hover">
+                      {saree.culturalName}
+                    </div>
+                  </div>
                   <span className="font-mono text-sm font-medium text-text-primary">
                     {formatPrice(saree.priceUSD)}
                   </span>
                 </div>
 
-                <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">
+                <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed font-light">
                   {saree.subTitle}
                 </p>
+
+                <div className="text-[10px] font-mono text-text-tertiary">
+                  By Master Artisan {saree.provenance.masterArtisan} · {saree.provenance.villageCluster}
+                </div>
 
                 {/* Colorway preview swatches & direct link */}
                 <div className="flex items-center justify-between pt-3 border-t border-surface-border/60">

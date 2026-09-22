@@ -1,20 +1,29 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { SareeProduct, Colorway, CartItem, CurrencyCode } from "../types";
+import { SareeProduct, Colorway, CartItem, CurrencyCode, SareeCustomizations } from "../types";
 import { CURRENCY_RATES } from "../catalogData";
 
 interface CartState {
   isOpen: boolean;
+  isCheckoutOpen: boolean;
   items: CartItem[];
   currency: CurrencyCode;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
+  openCheckout: () => void;
+  closeCheckout: () => void;
   setCurrency: (code: CurrencyCode) => void;
-  addItem: (product: SareeProduct, selectedColorway: Colorway, withBlouse?: boolean) => void;
+  addItem: (
+    product: SareeProduct,
+    selectedColorway: Colorway,
+    withBlouse?: boolean,
+    customizations?: SareeCustomizations
+  ) => void;
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
+  getItemUnitPrice: (item: CartItem) => number;
   getSubtotalUSD: () => number;
   formatPrice: (amountUSD: number) => string;
 }
@@ -23,6 +32,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       isOpen: false,
+      isCheckoutOpen: false,
       items: [],
       currency: "USD",
 
@@ -30,11 +40,42 @@ export const useCartStore = create<CartState>()(
       closeCart: () => set({ isOpen: false }),
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
 
+      openCheckout: () => set({ isOpen: false, isCheckoutOpen: true }),
+      closeCheckout: () => set({ isCheckoutOpen: false }),
+
       setCurrency: (code: CurrencyCode) => set({ currency: code }),
 
-      addItem: (product, selectedColorway, withBlouse = false) => {
+      getItemUnitPrice: (item: CartItem) => {
+        let price = item.product.priceUSD;
+        if (item.customizations) {
+          if (item.customizations.fallPico === "silk-rolled") {
+            price += 15;
+          }
+          if (item.customizations.blouse.enabled) {
+            price += item.customizations.blouse.priceUSD;
+          }
+          if (item.customizations.petticoat?.enabled) {
+            price += item.customizations.petticoat.priceUSD;
+          }
+          if (item.customizations.tassels?.enabled) {
+            price += item.customizations.tassels.priceUSD;
+          }
+          if (item.customizations.prePleated?.enabled) {
+            price += item.customizations.prePleated.priceUSD;
+          }
+        } else if (item.withBlouse && item.product.blouseOption) {
+          price += item.product.blouseOption.priceUSD;
+        }
+        return price;
+      },
+
+      addItem: (product, selectedColorway, withBlouse = false, customizations) => {
         set((state) => {
-          const itemId = `${product.id}-${selectedColorway.id}-${withBlouse ? "blouse" : "base"}`;
+          const customKey = customizations
+            ? `${customizations.fallPico}-${customizations.blouse.styleOption}-${customizations.petticoat?.enabled ? "pet" : "nopet"}-${customizations.prePleated?.enabled ? "pleat" : "nopleat"}`
+            : withBlouse ? "blouse" : "base";
+
+          const itemId = `${product.id}-${selectedColorway.id}-${customKey}`;
           const existingIndex = state.items.findIndex((i) => i.id === itemId);
 
           if (existingIndex > -1) {
@@ -43,12 +84,32 @@ export const useCartStore = create<CartState>()(
             return { items: updated, isOpen: true };
           }
 
+          let unitPrice = product.priceUSD;
+          if (customizations) {
+            if (customizations.fallPico === "silk-rolled") unitPrice += 15;
+            if (customizations.blouse.enabled) unitPrice += customizations.blouse.priceUSD;
+            if (customizations.petticoat?.enabled) unitPrice += customizations.petticoat.priceUSD;
+            if (customizations.tassels?.enabled) unitPrice += customizations.tassels.priceUSD;
+            if (customizations.prePleated?.enabled) unitPrice += customizations.prePleated.priceUSD;
+          } else if (withBlouse && product.blouseOption) {
+            unitPrice += product.blouseOption.priceUSD;
+          }
+
           const newItem: CartItem = {
             id: itemId,
             product,
             selectedColorway,
-            withBlouse,
+            withBlouse: customizations ? customizations.blouse.enabled : withBlouse,
+            customizations: customizations || {
+              fallPico: "hand-stitched-free",
+              blouse: {
+                enabled: withBlouse,
+                styleOption: "unstitched",
+                priceUSD: withBlouse ? product.blouseOption.priceUSD : 0,
+              },
+            },
             quantity: 1,
+            unitPriceUSD: unitPrice,
           };
 
           return { items: [...state.items, newItem], isOpen: true };
@@ -76,12 +137,9 @@ export const useCartStore = create<CartState>()(
       clearCart: () => set({ items: [] }),
 
       getSubtotalUSD: () => {
-        return get().items.reduce((total, item) => {
-          let itemTotal = item.product.priceUSD;
-          if (item.withBlouse && item.product.blouseOption) {
-            itemTotal += item.product.blouseOption.priceUSD;
-          }
-          return total + itemTotal * item.quantity;
+        const { items, getItemUnitPrice } = get();
+        return items.reduce((total, item) => {
+          return total + getItemUnitPrice(item) * item.quantity;
         }, 0);
       },
 
@@ -102,3 +160,4 @@ export const useCartStore = create<CartState>()(
     }
   )
 );
+

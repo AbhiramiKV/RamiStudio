@@ -3,17 +3,20 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useCanvasStore, LightingMode } from "@/lib/stores/canvasStore";
-import { Sun, Flame, Sparkles, ZoomIn, Info } from "lucide-react";
+import { SwatchBoxModal } from "@/components/trust/SwatchBoxModal";
+import { Sun, Flame, Sparkles, ZoomIn, Info, Package, ShieldCheck } from "lucide-react";
 
 export const TactileFabricLab: React.FC = () => {
   const [selectedWeight, setSelectedWeight] = useState<64 | 210>(210);
   const { lightingMode, setLightingMode } = useCanvasStore();
   const [macroZoom, setMacroZoom] = useState(false);
+  const [isSwatchOpen, setIsSwatchOpen] = useState(false);
 
   const fabrics = {
     64: {
       name: "Featherweight Banarasi Silk Organza",
       gsm: 64,
+      weightGrams: 310,
       drapeFeel: "Floating, ethereal, crisp memory hold with zero deadweight sag.",
       transparency: "Gossamer Translucent (80% Light Transmission)",
       warpWeft: "20/22 Denier High-Twist Katan Organza",
@@ -25,11 +28,12 @@ export const TactileFabricLab: React.FC = () => {
     210: {
       name: "Heavy Pure Mulberry Kanchipuram Silk",
       gsm: 210,
-      drapeFeel: "Stately, architectural cascades that hold sculptural knife-pleats.",
+      weightGrams: 685,
+      drapeFeel: "Stately, architectural cascades that hold sculptural knife-pleats all day.",
       transparency: "Opaque (Zero Translucency, Pure Light Absorption)",
       warpWeft: "2/120s Degummed Mulberry Silk × 3-Ply Filature Weft",
       zariType: "Certified 1.8g Silver-Plated Electro-lacquered Matte Zari",
-      origin: "Kanchipuram, Tamil Nadu",
+      origin: "Chinna Kanchipuram, Tamil Nadu",
       image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1200&auto=format&fit=crop",
       macroImage: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
     },
@@ -49,17 +53,16 @@ export const TactileFabricLab: React.FC = () => {
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 rounded-full bg-accent-zari" />
               <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-text-tertiary">
-                Digital Metrology & Tactile Audit
+                Artisanal Integrity & Purity Standards
               </span>
             </div>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight text-text-primary">
-              The Fabric Lab
+              The Connoisseur’s Weave Guide
             </h2>
           </div>
 
           <p className="text-xs text-text-secondary font-mono uppercase tracking-widest max-w-md">
-            Compare weight coefficients, filament density, and specular response
-            before acquiring.
+            Compare hand-spun silk densities, drape weight in grams, and silver zari purity before acquiring.
           </p>
         </div>
 
@@ -112,10 +115,10 @@ export const TactileFabricLab: React.FC = () => {
               <div className="grid grid-cols-3 gap-1.5 sm:flex sm:items-center sm:gap-2">
                 {(
                   [
-                    { id: "studio", label: "Studio", full: "Studio Editorial", icon: Sparkles },
-                    { id: "candlelight", label: "Candle", full: "Candlelight", icon: Flame },
-                    { id: "daylight", label: "Daylight", full: "Daylight", icon: Sun },
-                  ] as { id: LightingMode; label: string; full: string; icon: any }[]
+                    { id: "studio", label: "Studio", full: "Studio CRI-98", icon: Sparkles },
+                    { id: "candlelight", label: "Candle", full: "Evening Candlelight", icon: Flame },
+                    { id: "daylight", label: "Sunlight", full: "Temple Sunlight", icon: Sun },
+                  ] as { id: LightingMode; label: string; full: string; icon: React.ComponentType<{ className?: string }> }[]
                 ).map((mode) => {
                   const Icon = mode.icon;
                   return (
@@ -152,10 +155,10 @@ export const TactileFabricLab: React.FC = () => {
                 }`}
               >
                 <div className="text-[10px] font-mono tracking-widest text-text-tertiary uppercase">
-                  HEAVY ARCHITECTURAL
+                  STATELY KORVAI
                 </div>
                 <div className="font-serif text-lg text-text-primary mt-1">
-                  210 GSM Silk
+                  685g · 210 GSM Silk
                 </div>
               </button>
 
@@ -168,10 +171,10 @@ export const TactileFabricLab: React.FC = () => {
                 }`}
               >
                 <div className="text-[10px] font-mono tracking-widest text-text-tertiary uppercase">
-                  FEATHERWEIGHT
+                  FEATHERWEIGHT ORGANZA
                 </div>
                 <div className="font-serif text-lg text-text-primary mt-1">
-                  64 GSM Organza
+                  310g · 64 GSM Tissue
                 </div>
               </button>
             </div>
@@ -190,10 +193,10 @@ export const TactileFabricLab: React.FC = () => {
               <div className="space-y-3 pt-4 border-t border-surface-border/70 text-xs font-mono">
                 <div className="flex justify-between py-1.5 border-b border-surface-border/40">
                   <span className="text-text-tertiary uppercase tracking-wider">
-                    Surface Weight
+                    Total Saree Weight
                   </span>
                   <span className="text-text-primary font-medium">
-                    {currentFabric.gsm} Grams / Sq Meter
+                    {currentFabric.weightGrams} Grams ({currentFabric.gsm} g/m²)
                   </span>
                 </div>
 
@@ -217,7 +220,7 @@ export const TactileFabricLab: React.FC = () => {
 
                 <div className="flex justify-between py-1.5 border-b border-surface-border/40">
                   <span className="text-text-tertiary uppercase tracking-wider">
-                    Zari Specification
+                    Zari Metallurgy
                   </span>
                   <span className="text-accent-zari-hover">
                     {currentFabric.zariType}
@@ -235,14 +238,35 @@ export const TactileFabricLab: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-4 bg-canvas-base border border-surface-border text-center">
-              <span className="text-[10px] font-mono tracking-widest text-text-secondary uppercase">
-                100% UNTREATED NATURAL PROTEIN FIBER · SILK MARK CERTIFIED
-              </span>
+            {/* Tactile Swatch Archive CTA Card */}
+            <div className="p-4 bg-canvas-base border border-surface-border flex items-center justify-between gap-4">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-mono tracking-widest text-text-secondary uppercase flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-accent-zari" />
+                  <span>100% UNTREATED NATURAL PROTEIN SILK · SILK MARK CERTIFIED</span>
+                </span>
+                <p className="text-[11px] text-text-tertiary">
+                  Want to feel the silk drape at home? Order our 4-swatch physical archive.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setIsSwatchOpen(true)}
+                className="px-4 py-2 bg-text-primary text-canvas-base text-[10px] font-mono tracking-widest uppercase hover:bg-accent-zari hover:text-text-primary transition-colors flex items-center gap-1.5 whitespace-nowrap"
+              >
+                <Package className="w-3.5 h-3.5" />
+                <span>SWATCH KIT</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      <SwatchBoxModal
+        isOpen={isSwatchOpen}
+        onClose={() => setIsSwatchOpen(false)}
+      />
     </section>
   );
 };
+

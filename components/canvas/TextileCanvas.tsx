@@ -7,7 +7,7 @@ import { Colorway } from "@/lib/types";
 import { useCanvasStore } from "@/lib/stores/canvasStore";
 import { SareeDrapeEngine, DrapeStyle } from "@/lib/physics/SareeDrapeEngine";
 import { Fallback360Viewer } from "./Fallback360Viewer";
-import { Hand, RefreshCw, Layers, Rotate3d, Sparkles } from "lucide-react";
+import { Hand, RefreshCw, Layers, Rotate3d } from "lucide-react";
 
 interface TextileCanvasProps {
   colorway?: Colorway;
@@ -271,6 +271,16 @@ function createWaistbandGeometry(): THREE.BufferGeometry {
   return geo;
 }
 
+function isWebGLAvailable(): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    const testCanvas = document.createElement("canvas");
+    return !!(testCanvas.getContext("webgl2") || testCanvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
+
 export const TextileCanvas: React.FC<TextileCanvasProps> = ({
   colorway,
   fallbackImage = "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
@@ -280,7 +290,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasMountRef = useRef<HTMLDivElement>(null);
-  const [webglSupported, setWebglSupported] = useState<boolean>(true);
+  const [webglSupported, setWebglSupported] = useState<boolean>(isWebGLAvailable);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [activeDrape, setActiveDrape] = useState<DrapeStyle>("nivi");
   const [pleatCount, setPleatCount] = useState<number>(7);
@@ -311,18 +321,6 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     uLightPos: { value: THREE.Vector3 };
     uZoom: { value: number };
   } | null>(null);
-
-  useEffect(() => {
-    try {
-      const testCanvas = document.createElement("canvas");
-      const gl = testCanvas.getContext("webgl2") || testCanvas.getContext("webgl");
-      if (!gl) {
-        setWebglSupported(false);
-      }
-    } catch {
-      setWebglSupported(false);
-    }
-  }, []);
 
   useEffect(() => {
     if (!uniformsRef.current || !colorway) return;
@@ -404,7 +402,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       });
     } catch (err) {
       console.warn("WebGL unsupported:", err);
-      setWebglSupported(false);
+      setTimeout(() => setWebglSupported(false), 0);
       return;
     }
 
@@ -797,7 +795,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       observer.observe(container);
     }
 
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
     let animId: number;
 
     const animate = () => {
@@ -833,7 +831,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     };
 
     animate();
-    setIsLoaded(true);
+    setTimeout(() => setIsLoaded(true), 0);
 
     const handleResize = () => {
       if (!container) return;
@@ -876,6 +874,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       skirtMeshRef.current = null;
       sashMeshRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interactive]);
 
   useEffect(() => {

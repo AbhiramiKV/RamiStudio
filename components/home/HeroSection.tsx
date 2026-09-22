@@ -33,26 +33,24 @@ export const HeroSection: React.FC = () => {
         <div className="lg:col-span-6 space-y-5 sm:space-y-6 lg:space-y-8 z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-surface-border bg-canvas-elevated/70 text-[9px] sm:text-[10px] font-mono tracking-widest text-text-secondary">
             <Sparkles className="w-3 h-3 text-accent-zari" />
-            <span>EXHIBITION · AUTUMN / WINTER 2026</span>
+            <span>MASTER WEAVER ARCHIVE · AUTUMN / WINTER 2026</span>
           </div>
 
           <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.95] text-text-primary">
-            Wearable <br />
+            Living Heritage. <br />
             <span className="italic font-light text-text-secondary">
-              Architecture.
+              Six Yards of Grace.
             </span>
           </h1>
 
           <p className="font-sans text-base md:text-lg text-text-secondary max-w-lg leading-relaxed font-light">
-            Featherweight soft silks and gossamer organzas, stripped of
-            extraneous ornament. Woven on traditional pit-looms with antique
-            electro-lacquered matte zari.
+            Handspun pure mulberry silks, gossamer organzas, and certified antique matte silver zari. Handcrafted on double-shuttle pit-looms by 4th-generation master weavers across Kanchipuram and Varanasi.
           </p>
 
           {/* Colorway Swatch Bar for Live WebGL Mutation */}
           <div className="pt-2">
             <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-text-tertiary block mb-3">
-              Live Shader Swatch: {selectedColorway.name}
+              Living Weft Tone: {selectedColorway.name}
             </span>
             <div className="flex items-center gap-3">
               {featuredSaree.colorways.map((cw) => (
@@ -78,25 +76,35 @@ export const HeroSection: React.FC = () => {
             </div>
           </div>
 
-          {/* CTA Group */}
-          <div className="flex flex-wrap items-center gap-5 pt-4">
-            <Link
-              href={`/sarees/${featuredSaree.slug}`}
-              className="bg-text-primary text-canvas-base px-8 py-4 text-xs font-mono tracking-[0.2em] uppercase hover:bg-accent-zari hover:text-text-primary transition-all duration-300 flex items-center gap-3 shadow-md group"
-              data-cursor="INSPECT"
-            >
-              <span>EXPLORE SILHOUETTE</span>
-              <span className="group-hover:translate-x-1 transition-transform">
-                →
-              </span>
-            </Link>
+          {/* CTA Group & Trust Line */}
+          <div className="space-y-4 pt-2">
+            <div className="flex flex-wrap items-center gap-4">
+              <Link
+                href={`/sarees/${featuredSaree.slug}`}
+                className="bg-text-primary text-canvas-base px-8 py-4 text-xs font-mono tracking-[0.2em] uppercase hover:bg-accent-zari hover:text-text-primary transition-all duration-300 flex items-center gap-3 shadow-md group"
+                data-cursor="INSPECT"
+              >
+                <span>EXPLORE HEIRLOOM</span>
+                <span className="group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
+              </Link>
 
-            <Link
-              href="#fabric-lab"
-              className="px-6 py-4 text-xs font-mono tracking-[0.2em] uppercase border border-surface-border hover:border-text-primary transition-colors text-text-primary"
-            >
-              TACTILE FABRIC LAB
-            </Link>
+              <Link
+                href="#fabric-lab"
+                className="px-6 py-4 text-xs font-mono tracking-[0.2em] uppercase border border-surface-border hover:border-text-primary transition-colors text-text-primary"
+              >
+                THE WEAVE GUIDE
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-4 text-[10px] font-mono text-text-tertiary uppercase tracking-widest pt-1">
+              <span>SILK MARK CERTIFIED</span>
+              <span>·</span>
+              <span>FREE FALL & PICO</span>
+              <span>·</span>
+              <span>DHL EXPRESS DDP</span>
+            </div>
           </div>
         </div>
 

@@ -86,9 +86,9 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
           <nav className="space-y-4">
             {[
-              { label: "Collection (01)", href: "/#curated-drop", note: "Limited Silhouettes" },
-              { label: "Tactile Fabric Lab", href: "/#fabric-lab", note: "Digital Metrology" },
-              { label: "Textile Discourse", href: "/#journal", note: "Artisan Monograph" },
+              { label: "Master Heirlooms", href: "/#curated-drop", note: "Single-Batch Pure Silk Drops" },
+              { label: "The Weave Guide", href: "/#fabric-lab", note: "Tactile Metrology & Weights" },
+              { label: "Artisan Monograph", href: "/#journal", note: "Weaver Guilds & Heritage Notes" },
             ].map((item, idx) => (
               <Link
                 key={item.href}
@@ -112,7 +112,23 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
           </nav>
 
           {/* Quick Actions */}
-          <div className="pt-4 space-y-3">
+          <div className="pt-2 space-y-2.5">
+            <a
+              href="https://wa.me/919840123456?text=Hello%20Rami%20Studio%20Concierge,%20I%20would%20like%20to%20consult%20a%20handloom%20stylist."
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onClose}
+              className="w-full flex items-center justify-between p-3 border border-accent-zari/40 bg-canvas-elevated hover:bg-canvas-base transition-colors text-left"
+            >
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-accent-zari" />
+                <span className="text-[11px] font-mono tracking-wider uppercase text-text-primary">
+                  1-on-1 WhatsApp Stylist
+                </span>
+              </div>
+              <ArrowRight className="w-3 h-3 text-accent-zari" />
+            </a>
+
             <button
               onClick={() => {
                 onClose();

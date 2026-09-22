@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/stores/cartStore";
 import { LogoWordmark } from "@/components/branding/LogoWordmark";
@@ -10,17 +10,18 @@ import { CurrencyCode } from "@/lib/types";
 import { ShoppingBag, ChevronDown, Sparkles, Menu } from "lucide-react";
 import { MobileNavDrawer } from "./MobileNavDrawer";
 
+const emptySubscribe = () => () => {};
+
 export const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const { items, openCart, currency, setCurrency } = useCartStore();
 
   const totalItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
-    setMounted(true);
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
     };
@@ -30,16 +31,22 @@ export const Header: React.FC = () => {
 
   return (
     <>
+      {/* Top Heritage Trust Banner */}
+      <div className="bg-canvas-elevated border-b border-surface-border py-1.5 px-4 text-center text-[9px] sm:text-[10px] font-mono tracking-[0.2em] text-text-secondary uppercase">
+        <span className="hidden md:inline">Complimentary Hand-Stitched Fall & Pico · Silk Mark Certified Heirlooms · Worldwide DHL Express DDP · 7-Day In-Home Inspection</span>
+        <span className="md:hidden">Silk Mark Certified · Free Fall & Pico · DHL Express</span>
+      </div>
+
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-canvas-base/85 backdrop-blur-md border-b border-surface-border py-2.5 sm:py-3 shadow-xs"
-            : "bg-transparent py-4 sm:py-6"
+            ? "bg-canvas-base/90 backdrop-blur-md border-b border-surface-border py-2 sm:py-2.5 shadow-xs"
+            : "bg-transparent py-3 sm:py-5"
         }`}
         style={{
           paddingTop: scrolled
-            ? "max(0.625rem, env(safe-area-inset-top, 0px))"
-            : "max(1rem, env(safe-area-inset-top, 0px))",
+            ? "max(0.5rem, env(safe-area-inset-top, 0px))"
+            : "max(0.75rem, env(safe-area-inset-top, 0px))",
         }}
       >
         <div className="max-w-[1720px] mx-auto px-4 sm:px-6 md:px-12 flex items-center justify-between">
@@ -63,29 +70,29 @@ export const Header: React.FC = () => {
                 size={28}
                 className="text-text-primary transition-transform duration-300 group-hover:scale-105 sm:w-[32px] sm:h-[32px]"
               />
-              <span className="hidden xl:inline text-[10px] font-mono tracking-[0.2em] text-text-secondary uppercase">
-                Drop 01
+              <span className="hidden xl:inline text-[10px] font-mono tracking-[0.2em] text-accent-zari-hover uppercase">
+                Heirloom Edition
               </span>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-5 text-[11px] font-mono tracking-[0.14em] uppercase text-text-secondary">
+            <nav className="hidden lg:flex items-center gap-6 text-[11px] font-mono tracking-[0.14em] uppercase text-text-secondary">
               <Link
                 href="/#curated-drop"
                 className="hover:text-text-primary transition-colors"
               >
-                Collection
+                Heirlooms
               </Link>
               <Link
                 href="/#fabric-lab"
                 className="hover:text-text-primary transition-colors"
               >
-                Fabric Lab
+                Weave Guide
               </Link>
               <Link
                 href="/#journal"
                 className="hover:text-text-primary transition-colors"
               >
-                Editorial
+                Artisan Monograph
               </Link>
             </nav>
           </div>

@@ -10,10 +10,10 @@ export const EditorialJournal: React.FC = () => {
     {
       id: "art-1",
       slug: "philosophy-of-the-fold",
-      title: "The Architecture of Unstitched Fabric",
+      title: "The Grandmothers' Chest: Silks That Outlive Decades",
       subtitle:
-        "Why the six-yard saree is the world's most sophisticated parametric garment.",
-      category: "DESIGN ESSAY",
+        "The sacred continuity of the unstitched six yards—why a pure handloom saree is the only garment passed from mother to daughter without tailoring.",
+      category: "HERITAGE ESSAY",
       readTime: "4 MIN READ",
       image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1200&auto=format&fit=crop",
       linkedProductSlug: "alabaster-monolith",
@@ -21,10 +21,10 @@ export const EditorialJournal: React.FC = () => {
     {
       id: "art-2",
       slug: "korvai-pit-loom",
-      title: "The Korvai Interlock: Seam-Free Tension",
+      title: "The Korvai Rhythm: Two Artisans, One Synchronized Breath",
       subtitle:
-        "Two master weavers, one synchronized shuttle rhythm. How border meets body without scissors.",
-      category: "HERITAGE REPORT",
+        "Inside Chinna Kanchipuram: How two master weavers toss shuttles simultaneously across the warp divide so border meets body without a single seam.",
+      category: "WEAVER MONOGRAPH",
       readTime: "6 MIN READ",
       image: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=1200&auto=format&fit=crop",
       linkedProductSlug: "obsidian-veil-shot-silk",
@@ -32,10 +32,10 @@ export const EditorialJournal: React.FC = () => {
     {
       id: "art-3",
       slug: "matte-zari-restraint",
-      title: "Matte Zari: The Eradication of Synthetic Gloss",
+      title: "The Dignity of Matte Zari: Why Real Silver Whispers",
       subtitle:
-        "Sub-micron silver electroplating brushed to an antique satin glow that absorbs flash photography.",
-      category: "MATERIAL STUDY",
+        "Certified silver electroplated over pure silk thread and brushed with natural lacquer to absorb camera flash and glow under wedding chandeliers.",
+      category: "METALLURGY & CRAFT",
       readTime: "3 MIN READ",
       image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
       linkedProductSlug: "gossamer-sage-mirage",
@@ -52,16 +52,15 @@ export const EditorialJournal: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div>
             <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-text-tertiary block mb-2">
-              The Monograph · Editorial Essays
+              The Loom Monograph · Living Chronicles
             </span>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl tracking-tight text-text-primary">
-              Textile Discourse
+              Artisan Lineage & Craft
             </h2>
           </div>
 
           <p className="text-xs text-text-secondary font-mono uppercase tracking-widest max-w-sm">
-            Critical essays on handloom engineering, draping mechanics, and
-            restrained luxury.
+            Critical essays on Indian handloom sociology, weaving physics, and generational heirlooms.
           </p>
         </div>
 
