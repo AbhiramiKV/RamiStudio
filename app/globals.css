@@ -26,12 +26,17 @@
 :root {
   --background: #F9F8F6;
   --foreground: #1A1A18;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
 html {
   background-color: #F9F8F6;
   color: #1A1A18;
   scroll-behavior: auto;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -40,6 +45,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  min-height: 100dvh;
 }
 
 ::selection {

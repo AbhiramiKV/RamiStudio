@@ -408,8 +408,13 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       return;
     }
 
+    const isMobileDevice =
+      typeof window !== "undefined" &&
+      (window.innerWidth < 768 ||
+        window.matchMedia("(pointer: coarse), (hover: none)").matches);
+
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileDevice ? 1.5 : 2.0));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.08;
     mount.innerHTML = "";
@@ -654,8 +659,11 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     let isPointerDown = false;
     let isDraggingCloth = false;
     let startPointerX = 0;
+    let startPointerY = 0;
     let lastPointerX = 0;
     let angularVelocity = 0;
+    let hasDecidedGesture = false;
+    let isVerticalScroll = false;
 
     const getMouseNDC = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
@@ -667,8 +675,11 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       if (!interactive) return;
       isPointerDown = true;
       startPointerX = e.clientX;
+      startPointerY = e.clientY;
       lastPointerX = e.clientX;
       angularVelocity = 0;
+      hasDecidedGesture = false;
+      isVerticalScroll = false;
 
       getMouseNDC(e);
       raycaster.setFromCamera(mouse, camera);
@@ -676,24 +687,57 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       const intersects = raycaster.intersectObjects([palluMesh]);
       if (intersects.length > 0) {
         isDraggingCloth = true;
+        hasDecidedGesture = true;
         setIsGrabbing(true);
         const hitPoint = intersects[0].point;
         engine.grab(hitPoint);
 
         const cameraDir = camera.getWorldDirection(new THREE.Vector3()).negate();
         dragPlane.setFromNormalAndCoplanarPoint(cameraDir, hitPoint);
+
+        try {
+          renderer.domElement.setPointerCapture(e.pointerId);
+        } catch {}
       } else {
         isDraggingCloth = false;
-        setIsOrbiting(true);
+        // On desktop mouse, immediately allow orbit
+        if (e.pointerType !== "touch") {
+          setIsOrbiting(true);
+          try {
+            renderer.domElement.setPointerCapture(e.pointerId);
+          } catch {}
+        }
       }
-
-      try {
-        renderer.domElement.setPointerCapture(e.pointerId);
-      } catch {}
     };
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!isPointerDown) return;
+
+      // Smart Gesture Disambiguation on Mobile Touch:
+      if (e.pointerType === "touch" && !hasDecidedGesture && !isDraggingCloth) {
+        const dx = Math.abs(e.clientX - startPointerX);
+        const dy = Math.abs(e.clientY - startPointerY);
+
+        if (dy > dx && dy > 8) {
+          // Dominant vertical gesture: let native page scroll proceed without capturing touch
+          isVerticalScroll = true;
+          hasDecidedGesture = true;
+          isPointerDown = false;
+          return;
+        } else if (dx > 8) {
+          // Dominant horizontal gesture: engage 3D turntable orbit
+          hasDecidedGesture = true;
+          setIsOrbiting(true);
+          try {
+            renderer.domElement.setPointerCapture(e.pointerId);
+          } catch {}
+        } else {
+          return; // Deadzone threshold
+        }
+      }
+
+      if (isVerticalScroll) return;
+
       getMouseNDC(e);
       raycaster.setFromCamera(mouse, camera);
 
@@ -729,11 +773,38 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp);
 
+    // WebGL Context Preservation
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      console.warn("WebGL context lost. Pausing render loop.");
+    };
+    const handleContextRestored = () => {
+      console.info("WebGL context restored.");
+    };
+    domEl.addEventListener("webglcontextlost", handleContextLost, false);
+    domEl.addEventListener("webglcontextrestored", handleContextRestored, false);
+
+    // Viewport Visibility Observer (Saves mobile GPU & battery when scrolled off-screen)
+    let isVisibleInViewport = true;
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          isVisibleInViewport = entry.isIntersecting;
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(container);
+    }
+
     let clock = new THREE.Clock();
     let animId: number;
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
+
+      // Skip GPU computation & rendering when scrolled out of view
+      if (!isVisibleInViewport) return;
 
       const delta = Math.min(clock.getDelta(), 0.033);
       commonUniforms.uTime.value += delta;
@@ -777,10 +848,13 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
 
     return () => {
       cancelAnimationFrame(animId);
+      if (observer) observer.disconnect();
       window.removeEventListener("resize", handleResize);
       domEl.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
+      domEl.removeEventListener("webglcontextlost", handleContextLost);
+      domEl.removeEventListener("webglcontextrestored", handleContextRestored);
 
       blouse.traverse((c) => {
         if ((c as THREE.Mesh).geometry) (c as THREE.Mesh).geometry.dispose();
@@ -830,82 +904,84 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     >
       <div ref={canvasMountRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Top Left: Authentic Saree Drape Style Switcher */}
-      <div className="absolute top-4 left-4 z-20 flex flex-col gap-1.5 p-1 bg-canvas-base/85 backdrop-blur-md border border-surface-border rounded-xs shadow-xs">
-        <div className="text-[9px] font-mono tracking-widest text-text-tertiary px-2 py-0.5 uppercase flex items-center gap-1.5">
-          <Sparkles className="w-2.5 h-2.5 text-accent-zari" />
-          <span>Atelier Drape Style</span>
-        </div>
-        <div className="flex items-center gap-1">
+      {/* Top Controls: Adaptive Responsive Bar */}
+      <div className="absolute top-3 left-3 right-3 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+        {/* Authentic Saree Drape Style Switcher */}
+        <div className="pointer-events-auto flex items-center gap-1 p-1 bg-canvas-base/90 backdrop-blur-md border border-surface-border rounded-xs shadow-xs">
           {(
             [
-              { id: "nivi", label: "Classic Nivi" },
-              { id: "seedha", label: "Royal Seedha Pallu" },
-              { id: "cape", label: "Atelier Cape" },
-            ] as { id: DrapeStyle; label: string }[]
+              { id: "nivi", label: "Classic Nivi", short: "Nivi" },
+              { id: "seedha", label: "Royal Seedha", short: "Seedha" },
+              { id: "cape", label: "Atelier Cape", short: "Cape" },
+            ] as { id: DrapeStyle; label: string; short: string }[]
           ).map((style) => (
             <button
               key={style.id}
               onClick={() => handleDrapeChange(style.id)}
               data-drape={style.id}
-              className={`px-2.5 py-1 text-[10px] font-mono tracking-wider uppercase transition-all ${
+              className={`px-2 py-1 text-[10px] font-mono tracking-wider uppercase transition-all rounded-xs min-h-[30px] flex items-center justify-center ${
                 activeDrape === style.id
                   ? "bg-text-primary text-canvas-base font-medium shadow-xs"
                   : "text-text-secondary hover:text-text-primary"
               }`}
             >
-              {style.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Top Right: Reset Drape & Pleat Count Switcher */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-        <div className="flex items-center gap-1 p-1 bg-canvas-base/85 backdrop-blur-md border border-surface-border rounded-xs shadow-xs">
-          <Layers className="w-3 h-3 text-accent-zari ml-1.5" />
-          <span className="text-[9px] font-mono tracking-wider text-text-tertiary uppercase mr-1">
-            Pleats:
-          </span>
-          {[5, 7, 9].map((count) => (
-            <button
-              key={count}
-              onClick={() => handlePleatCountChange(count)}
-              className={`px-2 py-0.5 text-[10px] font-mono tracking-wider transition-all ${
-                pleatCount === count
-                  ? "bg-accent-zari text-canvas-base font-bold"
-                  : "text-text-secondary hover:text-text-primary"
-              }`}
-            >
-              {count}
+              <span className="sm:hidden">{style.short}</span>
+              <span className="hidden sm:inline">{style.label}</span>
             </button>
           ))}
         </div>
 
-        <button
-          onClick={() => handleDrapeChange(activeDrape)}
-          className="p-2 bg-canvas-base/85 backdrop-blur-md border border-surface-border text-text-secondary hover:text-text-primary transition-colors rounded-xs flex items-center gap-1.5 text-[10px] font-mono tracking-widest uppercase shadow-xs"
-          title="Reset Saree Drape"
-        >
-          <RefreshCw className="w-3 h-3" />
-          <span className="hidden sm:inline">RESET</span>
-        </button>
+        {/* Reset Drape & Pleat Count Switcher */}
+        <div className="pointer-events-auto flex items-center gap-1.5">
+          <div className="flex items-center gap-1 p-1 bg-canvas-base/90 backdrop-blur-md border border-surface-border rounded-xs shadow-xs">
+            <Layers className="w-3 h-3 text-accent-zari ml-1" />
+            <span className="text-[9px] font-mono tracking-wider text-text-tertiary uppercase mr-0.5 hidden sm:inline">
+              Pleats:
+            </span>
+            {[5, 7, 9].map((count) => (
+              <button
+                key={count}
+                onClick={() => handlePleatCountChange(count)}
+                className={`w-6 h-6 flex items-center justify-center text-[10px] font-mono tracking-wider transition-all rounded-xs ${
+                  pleatCount === count
+                    ? "bg-accent-zari text-canvas-base font-bold"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+              >
+                {count}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => handleDrapeChange(activeDrape)}
+            className="h-8 px-2.5 bg-canvas-base/90 backdrop-blur-md border border-surface-border text-text-secondary hover:text-text-primary transition-colors rounded-xs flex items-center gap-1 text-[10px] font-mono tracking-widest uppercase shadow-xs min-w-[36px] justify-center"
+            title="Reset Saree Drape"
+            aria-label="Reset Saree Drape"
+          >
+            <RefreshCw className="w-3 h-3" />
+            <span className="hidden sm:inline">RESET</span>
+          </button>
+        </div>
       </div>
 
       {/* Bottom Left: Genuine Draping Instruction Badge */}
-      <div className="absolute bottom-4 left-4 z-20 pointer-events-none flex items-center gap-2 bg-canvas-base/85 backdrop-blur-md px-3 py-1.5 border border-surface-border text-[10px] font-mono tracking-widest text-text-secondary uppercase shadow-xs">
-        <Hand className="w-3 h-3 text-accent-zari" />
-        <span>
-          {isGrabbing
-            ? "DRAPING PALLU OVER SHOULDER..."
-            : isOrbiting
-            ? "ROTATING 360° MODEL VIEW..."
-            : "DRAG PALLU TO DRAPE · DRAG OUTSIDE TO ORBIT"}
-        </span>
+      <div className="absolute bottom-3 left-3 right-3 sm:right-auto z-20 pointer-events-none flex items-center justify-between sm:justify-start gap-2 bg-canvas-base/90 backdrop-blur-md px-3 py-1.5 border border-surface-border text-[9px] sm:text-[10px] font-mono tracking-widest text-text-secondary uppercase shadow-xs">
+        <div className="flex items-center gap-1.5 truncate">
+          <Hand className="w-3 h-3 text-accent-zari flex-shrink-0" />
+          <span className="truncate">
+            {isGrabbing
+              ? "DRAPING PALLU..."
+              : isOrbiting
+              ? "ROTATING 360°..."
+              : "SWIPE 360° · DRAG PALLU TO DRAPE"}
+          </span>
+        </div>
+        <span className="text-[8px] text-text-tertiary sm:hidden">TOUCH ENABLED</span>
       </div>
 
       {/* Bottom Right: Architectural Metrology Tag */}
-      <div className="absolute bottom-4 right-4 z-20 pointer-events-none hidden md:flex items-center gap-3 bg-canvas-base/85 backdrop-blur-md px-3 py-1.5 border border-surface-border text-[10px] font-mono tracking-widest text-text-tertiary uppercase shadow-xs">
+      <div className="absolute bottom-3 right-3 z-20 pointer-events-none hidden md:flex items-center gap-3 bg-canvas-base/90 backdrop-blur-md px-3 py-1.5 border border-surface-border text-[10px] font-mono tracking-widest text-text-tertiary uppercase shadow-xs">
         <Rotate3d className="w-3.5 h-3.5 text-accent-zari" />
         <span>EDITORIAL MODEL SILHOUETTE</span>
         <span className="w-1 h-1 rounded-full bg-accent-zari" />

@@ -103,19 +103,19 @@ export const TactileFabricLab: React.FC = () => {
             </div>
 
             {/* Lighting Mode Switcher Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-canvas-base border border-surface-border">
-              <span className="text-[11px] font-mono tracking-wider text-text-secondary uppercase flex items-center gap-2">
-                <Info className="w-3.5 h-3.5 text-accent-zari" />
-                Simulate Ambient Lighting:
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 bg-canvas-base border border-surface-border">
+              <span className="text-[10px] sm:text-[11px] font-mono tracking-wider text-text-secondary uppercase flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 text-accent-zari flex-shrink-0" />
+                <span>Ambient Lighting:</span>
               </span>
 
-              <div className="flex items-center gap-2">
+              <div className="grid grid-cols-3 gap-1.5 sm:flex sm:items-center sm:gap-2">
                 {(
                   [
-                    { id: "studio", label: "Studio Editorial", icon: Sparkles },
-                    { id: "candlelight", label: "Evening Candlelight", icon: Flame },
-                    { id: "daylight", label: "Natural Daylight", icon: Sun },
-                  ] as { id: LightingMode; label: string; icon: any }[]
+                    { id: "studio", label: "Studio", full: "Studio Editorial", icon: Sparkles },
+                    { id: "candlelight", label: "Candle", full: "Candlelight", icon: Flame },
+                    { id: "daylight", label: "Daylight", full: "Daylight", icon: Sun },
+                  ] as { id: LightingMode; label: string; full: string; icon: any }[]
                 ).map((mode) => {
                   const Icon = mode.icon;
                   return (
@@ -123,14 +123,15 @@ export const TactileFabricLab: React.FC = () => {
                       key={mode.id}
                       onClick={() => setLightingMode(mode.id)}
                       data-lighting-mode={mode.id}
-                      className={`flex items-center gap-2 px-3 py-1.5 text-[11px] font-mono tracking-wider transition-colors border ${
+                      className={`flex items-center justify-center gap-1.5 px-2.5 py-2 sm:py-1.5 text-[10px] sm:text-[11px] font-mono tracking-wider transition-colors border rounded-xs min-h-[36px] ${
                         lightingMode === mode.id
-                          ? "bg-text-primary text-canvas-base border-text-primary"
+                          ? "bg-text-primary text-canvas-base border-text-primary font-medium"
                           : "bg-canvas-elevated text-text-secondary border-surface-border hover:border-text-primary"
                       }`}
                     >
-                      <Icon className="w-3 h-3" />
-                      <span>{mode.label}</span>
+                      <Icon className="w-3 h-3 flex-shrink-0" />
+                      <span className="sm:hidden">{mode.label}</span>
+                      <span className="hidden sm:inline">{mode.full}</span>
                     </button>
                   );
                 })}

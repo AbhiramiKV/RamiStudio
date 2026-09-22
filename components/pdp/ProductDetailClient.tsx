@@ -34,9 +34,18 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
   const [selectedPhoto, setSelectedPhoto] = useState<string>(saree.images.hero);
   const [withBlouse, setWithBlouse] = useState(false);
   const [addedAnimation, setAddedAnimation] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
 
   const { addItem, formatPrice } = useCartStore();
   const { lightingMode, setLightingMode } = useCanvasStore();
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setShowStickyBar(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleAddToBag = () => {
     addItem(saree, selectedColorway, withBlouse);
@@ -389,17 +398,52 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
             </div>
           </div>
 
-          {/* Preservation Protocol */}
-          <div className="p-4 bg-canvas-elevated border border-surface-border space-y-2">
-            <span className="text-[10px] font-mono tracking-widest text-text-secondary uppercase block">
-              Conservation & Archival Storage
-            </span>
-            <p className="text-xs text-text-tertiary leading-relaxed">
-              Delivered wrapped in unbleached mul-mul cotton cloth inside an acid-free cedar box. Refold along natural weft lines every six months. Never hang on metal wire hangers.
-            </p>
+            {/* Preservation Protocol */}
+            <div className="p-4 bg-canvas-elevated border border-surface-border space-y-2">
+              <span className="text-[10px] font-mono tracking-widest text-text-secondary uppercase block">
+                Conservation & Archival Storage
+              </span>
+              <p className="text-xs text-text-tertiary leading-relaxed">
+                Delivered wrapped in unbleached mul-mul cotton cloth inside an acid-free cedar box. Refold along natural weft lines every six months. Never hang on metal wire hangers.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Sticky Buy Bar with Safe-Area insets */}
+        <div
+          className={`fixed bottom-0 left-0 right-0 z-40 bg-canvas-base/95 backdrop-blur-md border-t border-surface-border px-4 py-3 shadow-2xl transition-all duration-300 lg:hidden ${
+            showStickyBar ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
+          }`}
+          style={{
+            paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
+          }}
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="font-serif text-sm text-text-primary truncate">
+                {saree.title}
+              </div>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="font-mono text-xs font-medium text-text-primary">
+                  {formatPrice(totalPriceUSD)}
+                </span>
+                <span className="text-[10px] font-mono text-text-tertiary truncate">
+                  · {selectedColorway.name.split(" ")[0]}
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={handleAddToBag}
+              className="bg-text-primary text-canvas-base px-5 py-2.5 text-xs font-mono tracking-widest uppercase hover:bg-accent-zari hover:text-text-primary transition-colors flex items-center gap-1.5 flex-shrink-0 rounded-xs shadow-sm min-h-[44px]"
+              aria-label="Acquire Silhouette"
+            >
+              <span>{addedAnimation ? "ADDED" : "ACQUIRE"}</span>
+              <span>→</span>
+            </button>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };

@@ -72,13 +72,13 @@ export const CuratedDrop: React.FC = () => {
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex gap-8 overflow-x-auto scrollbar-none pb-8 pt-2 cursor-grab active:cursor-grabbing select-none"
+          className="flex gap-5 sm:gap-8 overflow-x-auto scrollbar-none pb-8 pt-2 cursor-grab active:cursor-grabbing select-none"
           style={{ scrollSnapType: "x mandatory" }}
         >
           {SAREE_COLLECTION.map((saree) => (
             <div
               key={saree.id}
-              className="w-[310px] sm:w-[380px] md:w-[440px] flex-shrink-0 group flex flex-col justify-between"
+              className="w-[82vw] max-w-[340px] sm:w-[380px] md:w-[440px] flex-shrink-0 group flex flex-col justify-between"
               style={{ scrollSnapAlign: "start" }}
             >
               {/* Image Container with Hover Micro-Zoom */}
@@ -92,7 +92,7 @@ export const CuratedDrop: React.FC = () => {
                     src={saree.images.hero}
                     alt={saree.title}
                     fill
-                    sizes="(max-width: 768px) 310px, 440px"
+                    sizes="(max-width: 768px) 82vw, 440px"
                     className="object-cover transition-transform duration-700 ease-silk-out group-hover:scale-105"
                   />
                 </Link>
@@ -115,10 +115,10 @@ export const CuratedDrop: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Quick Add to Bag Trigger */}
+                {/* Quick Add to Bag Trigger - Always accessible on touch screens */}
                 <button
                   onClick={() => addItem(saree, saree.colorways[0])}
-                  className="absolute bottom-4 right-4 bg-canvas-base/90 backdrop-blur-md text-text-primary p-3 border border-surface-border hover:bg-accent-zari hover:text-text-primary transition-all duration-300 opacity-0 group-hover:opacity-100 shadow-md"
+                  className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 bg-canvas-base/90 backdrop-blur-md text-text-primary p-3 min-w-[44px] min-h-[44px] flex items-center justify-center border border-surface-border hover:bg-accent-zari hover:text-text-primary transition-all duration-300 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 shadow-md"
                   aria-label={`Quick add ${saree.title} to bag`}
                   data-cursor="ADD"
                 >

@@ -13,29 +13,30 @@ export const HeroSection: React.FC = () => {
   );
 
   return (
-    <section className="relative min-h-[95vh] md:min-h-screen flex flex-col justify-between pt-28 pb-12 px-6 md:px-12 overflow-hidden border-b border-surface-border">
+    <section className="relative min-h-[92vh] sm:min-h-[95vh] md:min-h-screen flex flex-col justify-between pt-20 sm:pt-28 pb-8 sm:pb-12 px-4 sm:px-6 md:px-12 overflow-hidden border-b border-surface-border">
       {/* Background Ambient Glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-zari/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-accent-zari/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Top Tagline / Chapter Marker */}
-      <div className="max-w-[1720px] mx-auto w-full flex items-center justify-between text-[11px] font-mono tracking-[0.25em] text-text-secondary uppercase">
+      <div className="max-w-[1720px] mx-auto w-full flex items-center justify-between text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-text-secondary uppercase">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-accent-zari" />
           <span>INAUGURAL DROP 01</span>
         </div>
-        <span>PURE KANCHIPURAM · BANARASI ORGANZA · MATTE ZARI</span>
+        <span className="hidden sm:inline">PURE KANCHIPURAM · BANARASI ORGANZA · MATTE ZARI</span>
+        <span className="sm:hidden text-accent-zari">PURE SILK HANDLOOM</span>
       </div>
 
       {/* Centerpiece 50/50 Architecture */}
-      <div className="max-w-[1720px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center my-auto">
+      <div className="max-w-[1720px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center my-auto py-4 sm:py-0">
         {/* Left: Typographic Authority */}
-        <div className="lg:col-span-6 space-y-6 lg:space-y-8 z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-surface-border bg-canvas-elevated/70 text-[10px] font-mono tracking-widest text-text-secondary">
+        <div className="lg:col-span-6 space-y-5 sm:space-y-6 lg:space-y-8 z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-surface-border bg-canvas-elevated/70 text-[9px] sm:text-[10px] font-mono tracking-widest text-text-secondary">
             <Sparkles className="w-3 h-3 text-accent-zari" />
             <span>EXHIBITION · AUTUMN / WINTER 2026</span>
           </div>
 
-          <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.95] text-text-primary">
+          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.95] text-text-primary">
             Wearable <br />
             <span className="italic font-light text-text-secondary">
               Architecture.
@@ -112,16 +113,16 @@ export const HeroSection: React.FC = () => {
       </div>
 
       {/* Bottom Viewport Anchor */}
-      <div className="max-w-[1720px] mx-auto w-full flex items-center justify-between pt-6 text-[10px] font-mono tracking-widest text-text-tertiary uppercase">
-        <span>KANCHIPURAM LOT NO. 01/2026</span>
+      <div className="max-w-[1720px] mx-auto w-full flex items-center justify-center sm:justify-between pt-4 sm:pt-6 text-[9px] sm:text-[10px] font-mono tracking-widest text-text-tertiary uppercase">
+        <span className="hidden sm:inline">KANCHIPURAM LOT NO. 01/2026</span>
         <a
           href="#curated-drop"
-          className="flex items-center gap-2 hover:text-text-primary transition-colors"
+          className="flex items-center gap-2 hover:text-text-primary transition-colors text-text-secondary"
         >
           <span>SCROLL TO DISCOVER</span>
-          <ArrowDown className="w-3 h-3 animate-bounce" />
+          <ArrowDown className="w-3 h-3 animate-bounce text-accent-zari" />
         </a>
-        <span>EST. 2026 · ALL TEXTILES CERTIFIED</span>
+        <span className="hidden sm:inline">EST. 2026 · ALL TEXTILES CERTIFIED</span>
       </div>
     </section>
   );

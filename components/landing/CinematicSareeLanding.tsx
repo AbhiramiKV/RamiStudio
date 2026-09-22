@@ -81,17 +81,22 @@ export const CinematicSareeLanding: React.FC = () => {
       return;
     }
 
+    const isMobile =
+      width < 768 ||
+      (typeof window !== "undefined" &&
+        window.matchMedia("(pointer: coarse), (hover: none)").matches);
+
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
     // 2. Realistic Saree Geometry (Wide 6-meter drape proportions)
-    // Width 2.4 units, Length 14 units (subdivided 120 x 28)
-    const lengthSegments = 120;
-    const widthSegments = 28;
+    // Budgeted vertex density for mobile GPUs: 64x18 on mobile vs 120x28 on desktop
+    const lengthSegments = isMobile ? 64 : 120;
+    const widthSegments = isMobile ? 18 : 28;
     const geometry = new THREE.PlaneGeometry(14, 2.5, lengthSegments, widthSegments);
 
     // 3. Realistic Saree Shader with Pallu Bands & Selvedge Zari
@@ -298,9 +303,13 @@ export const CinematicSareeLanding: React.FC = () => {
   return (
     <div
       onClick={dismiss}
-      className={`fixed inset-0 z-[200] bg-canvas-base flex flex-col justify-between p-8 md:p-14 select-none overflow-hidden cursor-pointer transition-opacity duration-500 ease-silk-out ${
+      className={`fixed inset-0 z-[200] bg-canvas-base flex flex-col justify-between p-6 sm:p-8 md:p-14 select-none overflow-hidden cursor-pointer transition-opacity duration-500 ease-silk-out ${
         fading ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
+      style={{
+        paddingTop: "max(1.5rem, env(safe-area-inset-top, 0px))",
+        paddingBottom: "max(1.5rem, env(safe-area-inset-bottom, 0px))",
+      }}
       role="region"
       aria-label="Rami Studio Splash Entrance"
     >
@@ -317,17 +326,17 @@ export const CinematicSareeLanding: React.FC = () => {
       <div className="relative z-10 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-accent-zari animate-ping" />
-          <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-text-secondary">
+          <span className="text-[9px] sm:text-[10px] font-mono tracking-[0.25em] uppercase text-text-secondary">
             Rami Studio · Silk Architecture
           </span>
         </div>
-        <span className="text-[10px] font-mono tracking-widest text-text-tertiary uppercase">
-          Tap anywhere to enter
+        <span className="text-[9px] sm:text-[10px] font-mono tracking-widest text-text-tertiary uppercase">
+          Tap to enter
         </span>
       </div>
 
       {/* Centerpiece Modern Brand Reveal */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center my-auto space-y-6 pointer-events-none">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center my-auto space-y-4 sm:space-y-6 pointer-events-none">
         {/* Modern Monogram Icon */}
         <div
           className={`transition-all duration-700 ease-silk-out transform ${
@@ -336,8 +345,8 @@ export const CinematicSareeLanding: React.FC = () => {
               : "opacity-0 scale-90 translate-y-4"
           }`}
         >
-          <div className="p-5 rounded-full border border-surface-border bg-canvas-base/60 backdrop-blur-md shadow-xl">
-            <LogoMonogram size={64} className="text-text-primary" />
+          <div className="p-4 sm:p-5 rounded-full border border-surface-border bg-canvas-base/60 backdrop-blur-md shadow-xl">
+            <LogoMonogram size={52} className="text-text-primary sm:w-[64px] sm:h-[64px]" />
           </div>
         </div>
 
@@ -345,26 +354,27 @@ export const CinematicSareeLanding: React.FC = () => {
         <div
           className={`transition-all duration-700 delay-150 ease-silk-out transform ${
             logoRevealed
-              ? "opacity-100 translate-y-0 tracking-[0.3em]"
+              ? "opacity-100 translate-y-0 tracking-[0.25em] sm:tracking-[0.3em]"
               : "opacity-0 translate-y-2 tracking-[0.14em]"
           }`}
         >
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl text-text-primary font-light uppercase">
+          <h1 className="font-serif text-3xl sm:text-6xl md:text-7xl text-text-primary font-light uppercase">
             Rami Studio
           </h1>
-          <div className="flex items-center justify-center gap-2 mt-3 text-[10px] font-mono tracking-[0.45em] text-text-secondary uppercase">
-            <span className="w-6 h-[1px] bg-accent-zari/60" />
+          <div className="flex items-center justify-center gap-2 mt-2 sm:mt-3 text-[9px] sm:text-[10px] font-mono tracking-[0.35em] sm:tracking-[0.45em] text-text-secondary uppercase">
+            <span className="w-4 sm:w-6 h-[1px] bg-accent-zari/60" />
             <span>Featherweight Soft Silks</span>
-            <span className="w-6 h-[1px] bg-accent-zari/60" />
+            <span className="w-4 sm:w-6 h-[1px] bg-accent-zari/60" />
           </div>
         </div>
       </div>
 
       {/* Bottom Provenance Coordinate Bar */}
-      <div className="relative z-10 flex items-center justify-between text-[10px] font-mono tracking-widest text-text-tertiary uppercase pointer-events-none">
-        <span>DROP 01 / 2026</span>
+      <div className="relative z-10 flex items-center justify-between text-[9px] sm:text-[10px] font-mono tracking-widest text-text-tertiary uppercase pointer-events-none">
+        <span className="hidden sm:inline">DROP 01 / 2026</span>
         <span>KANCHIPURAM · VARANASI · ARANI</span>
-        <span>ANTIQUE MATTE ZARI</span>
+        <span className="hidden sm:inline">ANTIQUE MATTE ZARI</span>
+        <span className="sm:hidden text-accent-zari">PURE HANDLOOM</span>
       </div>
     </div>
   );

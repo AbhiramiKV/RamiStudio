@@ -7,11 +7,18 @@ export const MagneticCursor: React.FC = () => {
   const dotRef = useRef<HTMLDivElement>(null);
   const [cursorText, setCursorText] = useState<string>("");
   const [isActive, setIsActive] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   const [isTouch, setIsTouch] = useState<boolean>(false);
 
   useEffect(() => {
-    // Detect touch device
-    if (window.matchMedia("(pointer: coarse)").matches) {
+    setMounted(true);
+    // Detect touch device / coarse pointer
+    const isTouchDevice =
+      window.matchMedia("(pointer: coarse), (hover: none)").matches ||
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0;
+
+    if (isTouchDevice) {
       setIsTouch(true);
       return;
     }
@@ -70,7 +77,7 @@ export const MagneticCursor: React.FC = () => {
     };
   }, []);
 
-  if (isTouch) return null;
+  if (!mounted || isTouch) return null;
 
   return (
     <>

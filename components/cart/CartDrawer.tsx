@@ -172,28 +172,28 @@ export const CartDrawer: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
-                    {/* Quantity Selector */}
+                    {/* Quantity Selector with Accessible Touch Targets */}
                     <div className="flex items-center border border-surface-border bg-canvas-elevated">
                       <button
                         onClick={() =>
                           updateQuantity(item.id, item.quantity - 1)
                         }
-                        className="p-1.5 hover:bg-canvas-base transition-colors"
+                        className="w-9 h-9 flex items-center justify-center hover:bg-canvas-base transition-colors"
                         aria-label="Decrease quantity"
                       >
-                        <Minus className="w-3 h-3 text-text-secondary" />
+                        <Minus className="w-3.5 h-3.5 text-text-secondary" />
                       </button>
-                      <span className="px-3 text-xs font-mono">
+                      <span className="px-3 text-xs font-mono select-none">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() =>
                           updateQuantity(item.id, item.quantity + 1)
                         }
-                        className="p-1.5 hover:bg-canvas-base transition-colors"
+                        className="w-9 h-9 flex items-center justify-center hover:bg-canvas-base transition-colors"
                         aria-label="Increase quantity"
                       >
-                        <Plus className="w-3 h-3 text-text-secondary" />
+                        <Plus className="w-3.5 h-3.5 text-text-secondary" />
                       </button>
                     </div>
 
@@ -213,9 +213,14 @@ export const CartDrawer: React.FC = () => {
           )}
         </div>
 
-        {/* Footer Checkout Tier */}
+        {/* Footer Checkout Tier with Safe-Area bottom inset */}
         {items.length > 0 && (
-          <div className="p-6 border-t border-surface-border bg-canvas-elevated space-y-4">
+          <div
+            className="p-6 border-t border-surface-border bg-canvas-elevated space-y-4"
+            style={{
+              paddingBottom: "max(1.5rem, env(safe-area-inset-bottom, 0px))",
+            }}
+          >
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs text-text-secondary font-mono">
                 <span>SUBTOTAL</span>
@@ -241,7 +246,7 @@ export const CartDrawer: React.FC = () => {
                   "Redirecting to Medusa / Stripe Express Secure Settlement Gateway..."
                 );
               }}
-              className="w-full bg-text-primary text-canvas-base py-3.5 px-4 text-xs font-mono tracking-[0.2em] uppercase hover:bg-accent-zari hover:text-text-primary transition-colors flex items-center justify-center gap-2 group shadow-sm"
+              className="w-full bg-text-primary text-canvas-base py-3.5 px-4 text-xs font-mono tracking-[0.2em] uppercase hover:bg-accent-zari hover:text-text-primary transition-colors flex items-center justify-center gap-2 group shadow-sm min-h-[48px]"
               data-cursor="EXPRESS CHECKOUT"
             >
               <span>PROCEED TO CHECKOUT</span>
