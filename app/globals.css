@@ -1,26 +1,103 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-canvas-base: #F9F8F6;
+  --color-canvas-elevated: #F2EFEB;
+  --color-canvas-muted: #E8E4DC;
+  --color-surface-border: #E0DBD1;
+  --color-text-primary: #1A1A18;
+  --color-text-secondary: #66645E;
+  --color-text-tertiary: #99958C;
+  --color-accent-zari: #C5A059;
+  --color-accent-zari-hover: #B38E46;
+  --color-accent-sage: #8A9A86;
+  --color-accent-sand: #D8C8B8;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --font-editorial: var(--font-editorial);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --ease-silk-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-silk-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-zari-shimmer: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-magnetic-snap: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #F9F8F6;
+  --foreground: #1A1A18;
+}
+
+html {
+  background-color: #F9F8F6;
+  color: #1A1A18;
+  scroll-behavior: auto;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #F9F8F6;
+  color: #1A1A18;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #E8E4DC;
+  color: #1A1A18;
+}
+
+/* Lenis Recommended CSS */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Custom Editorial Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F9F8F6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D8C8B8;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C5A059;
+}
+
+.silk-panel {
+  background: rgba(249, 248, 246, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(224, 219, 209, 0.6);
+}
+
+.zari-border {
+  border-color: rgba(197, 160, 89, 0.35);
+}
+
+.zari-glow {
+  box-shadow: 0 0 25px -5px rgba(197, 160, 89, 0.18);
 }
