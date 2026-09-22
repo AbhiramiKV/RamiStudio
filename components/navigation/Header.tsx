@@ -101,10 +101,10 @@ export const Header: React.FC = () => {
           <div className="absolute left-1/2 -translate-x-1/2 pointer-events-auto">
             <Link href="/" data-cursor="RAMI">
               <div className="hidden sm:block">
-                <LogoWordmark size={scrolled ? "sm" : "md"} withDescriptor={!scrolled} />
+                <LogoWordmark size={scrolled ? "sm" : "md"} withDescriptor={!scrolled} descriptorText="HAUTE HANDLOOM MAISON" />
               </div>
               <div className="sm:hidden">
-                <LogoWordmark size="sm" withDescriptor={false} />
+                <LogoWordmark size="xs" withDescriptor={false} />
               </div>
             </Link>
           </div>

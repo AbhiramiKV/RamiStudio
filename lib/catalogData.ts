@@ -14,7 +14,7 @@ export const SWATCH_BOX_OFFER = {
   priceUSD: 25,
   description:
     "Four 4×4 inch touch-and-feel swatches of our handspun mulberry silk, wild tussar, Banarasi organza, and antique silver-plated matte zari yarn skeins. Shipped in unbleached mul-mul cotton. 100% credited toward your first heirloom acquisition.",
-  image: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=800&auto=format&fit=crop",
+  image: "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=800&auto=format&fit=crop",
 };
 
 export const SAREE_COLLECTION: SareeProduct[] = [
@@ -98,7 +98,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     images: {
       hero: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
       drape: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
-      macro: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=1600&auto=format&fit=crop",
+      macro: "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=1600&auto=format&fit=crop",
       detail: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
       palluSpread: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
       modelDrape: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
@@ -216,7 +216,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     images: {
       hero: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
       drape: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
-      macro: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=1600&auto=format&fit=crop",
+      macro: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1600&auto=format&fit=crop",
       detail: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
       palluSpread: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
       modelDrape: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",

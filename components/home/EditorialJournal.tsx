@@ -26,7 +26,7 @@ export const EditorialJournal: React.FC = () => {
         "Inside Chinna Kanchipuram: How two master weavers toss shuttles simultaneously across the warp divide so border meets body without a single seam.",
       category: "WEAVER MONOGRAPH",
       readTime: "6 MIN READ",
-      image: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=1200&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1200&auto=format&fit=crop",
       linkedProductSlug: "obsidian-veil-shot-silk",
     },
     {

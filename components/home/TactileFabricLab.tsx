@@ -23,7 +23,7 @@ export const TactileFabricLab: React.FC = () => {
       zariType: "Sub-micron Electro-oxidized Antique Pale Gold",
       origin: "Varanasi, Uttar Pradesh",
       image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1200&auto=format&fit=crop",
-      macroImage: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=1200&auto=format&fit=crop",
+      macroImage: "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=1200&auto=format&fit=crop",
     },
     210: {
       name: "Heavy Pure Mulberry Kanchipuram Silk",

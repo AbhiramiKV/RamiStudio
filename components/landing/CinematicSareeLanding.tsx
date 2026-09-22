@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { LogoMonogram } from "@/components/branding/LogoMonogram";
+import { LogoWordmark } from "@/components/branding/LogoWordmark";
 
 export const CinematicSareeLanding: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(true);
@@ -344,27 +345,23 @@ export const CinematicSareeLanding: React.FC = () => {
               : "opacity-0 scale-90 translate-y-4"
           }`}
         >
-          <div className="p-4 sm:p-5 rounded-full border border-surface-border bg-canvas-base/60 backdrop-blur-md shadow-xl">
-            <LogoMonogram size={52} className="text-text-primary sm:w-[64px] sm:h-[64px]" />
+          <div className="p-3.5 sm:p-4 rounded-sm border border-accent-zari/40 bg-canvas-base/80 backdrop-blur-md shadow-2xl">
+            <LogoMonogram size={64} className="text-text-primary sm:w-[76px] sm:h-[76px]" />
           </div>
         </div>
 
-        {/* Editorial Wordmark Reveal with Fluid Letter-Spacing Expansion */}
+        {/* Editorial Wordmark Reveal */}
         <div
           className={`transition-all duration-700 delay-150 ease-silk-out transform ${
             logoRevealed
-              ? "opacity-100 translate-y-0 tracking-[0.25em] sm:tracking-[0.3em]"
-              : "opacity-0 translate-y-2 tracking-[0.14em]"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-3"
           }`}
         >
-          <h1 className="font-serif text-3xl sm:text-6xl md:text-7xl text-text-primary font-light uppercase">
-            Rami Studio
-          </h1>
-          <div className="flex items-center justify-center gap-2 mt-2 sm:mt-3 text-[9px] sm:text-[10px] font-mono tracking-[0.35em] sm:tracking-[0.45em] text-text-secondary uppercase">
-            <span className="w-4 sm:w-6 h-[1px] bg-accent-zari/60" />
-            <span>Featherweight Soft Silks</span>
-            <span className="w-4 sm:w-6 h-[1px] bg-accent-zari/60" />
-          </div>
+          <LogoWordmark
+            size="xl"
+            descriptorText="HAUTE HANDLOOM MAISON · KANCHIPURAM"
+          />
         </div>
       </div>
 

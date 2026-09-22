@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
           {/* Top Tier: Brand Manifesto & Newsletter */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 pb-16 border-b border-surface-border/70">
             <div className="lg:col-span-6 space-y-6">
-              <LogoWordmark size="md" />
+              <LogoWordmark size="md" align="left" descriptorText="HAUTE HANDLOOM MAISON · KANCHIPURAM" />
               <p className="font-serif text-xl md:text-2xl text-text-secondary leading-relaxed max-w-lg font-light">
                 &ldquo;We preserve the ceremonial handloom saree as living architecture—honoring pure silk tension, master-loom geometry, and real silver zari.&rdquo;
               </p>
@@ -95,7 +95,7 @@ export const Footer: React.FC = () => {
               </div>
 
               <div className="pt-8">
-                <LogoSeal size={72} className="text-text-tertiary opacity-75" />
+                <LogoSeal size={88} className="text-text-primary opacity-80 hover:opacity-100 transition-opacity" />
               </div>
             </div>
           </div>

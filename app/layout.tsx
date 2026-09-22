@@ -39,6 +39,15 @@ export const metadata: Metadata = {
     "Matte Zari",
     "Textile Architecture",
   ],
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico" },
+    ],
+    apple: [
+      { url: "/apple-icon.svg", type: "image/svg+xml" },
+    ],
+  },
 };
 
 import { LenisProvider } from "@/components/motion/LenisProvider";
