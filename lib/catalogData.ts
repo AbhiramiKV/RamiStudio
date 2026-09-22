@@ -319,11 +319,11 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       "Gallery Openings",
     ],
     images: {
-      hero: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=1600&auto=format&fit=crop",
+      hero: "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1600&auto=format&fit=crop",
       drape: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
       macro: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
       detail: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
-      palluSpread: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=1600&auto=format&fit=crop",
+      palluSpread: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1600&auto=format&fit=crop",
       modelDrape: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
       unboxing: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
     },
@@ -336,7 +336,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       title: "Coordinated Dual-Tone Silk Satin Blouse Piece (1.0m)",
       priceUSD: 195,
       fabric: "Pure 100g Mulberry Silk Satin in Charcoal",
-      image: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=600&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=600&auto=format&fit=crop",
     },
     reviews: [
       {
@@ -427,7 +427,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       hero: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
       drape: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
       macro: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
-      detail: "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=1600&auto=format&fit=crop",
+      detail: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1600&auto=format&fit=crop",
       palluSpread: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
       modelDrape: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
       unboxing: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
