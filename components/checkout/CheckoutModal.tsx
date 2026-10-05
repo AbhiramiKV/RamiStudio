@@ -26,6 +26,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
   const {
     items,
     getSubtotalUSD,
+    appliedPromoCode,
+    promoDiscountUSD,
     formatPrice,
     clearCart,
   } = useCartStore();
@@ -42,10 +44,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
   const [postalCode, setPostalCode] = useState("");
   const [giftNote, setGiftNote] = useState("");
   const [isCedarBoxRequested, setIsCedarBoxRequested] = useState(true);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   // Payment state
   const [paymentMethod, setPaymentMethod] = useState<"card" | "upi" | "klarna" | "cod">("card");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [authStepText, setAuthStepText] = useState("Initiating 3D Secure 2.0 Handshake...");
   const [confirmedOrderId, setConfirmedOrderId] = useState("");
 
   if (!isOpen) return null;
@@ -54,24 +58,47 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
   // Duties included for DDP guarantee; local sales tax / GST simulated
   const estimatedTaxUSD = country === "India" ? Math.round(subtotalUSD * 0.05) : 0;
   const shippingUSD = subtotalUSD > 1000 ? 0 : 45;
-  const totalUSD = subtotalUSD + estimatedTaxUSD + shippingUSD;
+  const totalUSD = Math.max(0, subtotalUSD - promoDiscountUSD + estimatedTaxUSD + shippingUSD);
 
   const handleProceedToPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (fullName && email && address && postalCode) {
-      setStep("payment");
+    setValidationError(null);
+
+    if (!fullName.trim()) {
+      setValidationError("Please enter the primary patron full name.");
+      return;
     }
+    if (!email.includes("@") || !email.includes(".")) {
+      setValidationError("Please provide a valid connoisseur dispatch email.");
+      return;
+    }
+    if (phone.replace(/\D/g, "").length < 8) {
+      setValidationError("Please enter a valid telephone number for DHL courier coordination.");
+      return;
+    }
+    if (!address.trim() || !postalCode.trim()) {
+      setValidationError("Please complete your physical delivery address and postal code.");
+      return;
+    }
+
+    setStep("payment");
   };
 
   const handleCompleteOrder = () => {
     setIsProcessing(true);
+    setAuthStepText("Authenticating 3D Secure 2.0 Bank Verification Protocol...");
+
+    setTimeout(() => {
+      setAuthStepText("Applying Cryptographic Zari Vault Token...");
+    }, 900);
+
     setTimeout(() => {
       const orderId = `RAMI-2026-${Math.floor(1000 + Math.random() * 9000)}`;
       setConfirmedOrderId(orderId);
       setIsProcessing(false);
       setStep("confirmed");
       clearCart();
-    }, 1800);
+    }, 2000);
   };
 
   return (
@@ -91,6 +118,24 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
         aria-modal="true"
         aria-labelledby="checkout-modal-title"
       >
+        {/* 3D Secure 2.0 Biometric / Bank Simulation Overlay */}
+        {isProcessing && (
+          <div className="absolute inset-0 bg-canvas-base/95 backdrop-blur-md z-30 flex flex-col items-center justify-center p-8 text-center space-y-4 animate-fadeIn">
+            <div className="w-12 h-12 rounded-full border-2 border-accent-zari/40 border-t-accent-zari animate-spin" />
+            <div className="space-y-1">
+              <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-accent-zari-hover block">
+                3D Secure 2.0 Bank Gateway
+              </span>
+              <h4 className="font-serif text-xl sm:text-2xl text-text-primary">
+                {authStepText}
+              </h4>
+            </div>
+            <p className="text-xs text-text-secondary font-mono max-w-sm font-light">
+              Securing transaction with 256-bit cryptographic token. Please do not refresh.
+            </p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-surface-border bg-canvas-elevated flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -245,11 +290,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
                 </p>
 
                 <div className="pt-2">
-                  <label className="block text-text-tertiary uppercase text-[10px] mb-1">
-                    Calligraphed Gift Message / Trousseau Dedication (Optional):
-                  </label>
+                  <div className="flex items-center justify-between text-[10px] mb-1">
+                    <label className="text-text-tertiary uppercase">
+                      Calligraphed Gift Message / Trousseau Dedication (Optional):
+                    </label>
+                    <span className="font-mono text-text-tertiary">
+                      {200 - giftNote.length} chars
+                    </span>
+                  </div>
                   <input
                     type="text"
+                    maxLength={200}
                     value={giftNote}
                     onChange={(e) => setGiftNote(e.target.value)}
                     placeholder="e.g. For Radhika on her wedding day with all our blessings."
@@ -279,9 +330,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
           {/* STEP 2: SHIPPING */}
           {step === "shipping" && (
             <form onSubmit={handleProceedToPayment} className="space-y-5 animate-fadeIn">
+              {validationError && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-mono rounded-xs">
+                  {validationError}
+                </div>
+              )}
+
               <div className="space-y-1">
                 <h4 className="font-serif text-lg text-text-primary">
-                  Global Express Courier & Landed Customs (DDP)
+                  Global Express Courier &amp; Landed Customs (DDP)
                 </h4>
                 <p className="text-xs text-text-secondary font-light">
                   All international consignments ship via insured DHL Express with Delivery Duty Paid (DDP). Zero surprise customs fees upon doorstep arrival.
@@ -528,8 +585,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
                   <span>Acquisition Subtotal:</span>
                   <span>{formatPrice(subtotalUSD)}</span>
                 </div>
+                {promoDiscountUSD > 0 && (
+                  <div className="flex justify-between text-emerald-600">
+                    <span>Voucher Credit ({appliedPromoCode}):</span>
+                    <span>-{formatPrice(promoDiscountUSD)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-text-secondary">
-                  <span>Estimated Tax & Duties:</span>
+                  <span>Estimated Tax &amp; Duties:</span>
                   <span>{estimatedTaxUSD > 0 ? formatPrice(estimatedTaxUSD) : "INCLUDED (DDP)"}</span>
                 </div>
                 <div className="flex justify-between text-text-secondary">

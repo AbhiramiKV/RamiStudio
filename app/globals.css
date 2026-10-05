@@ -6,12 +6,12 @@
   --color-canvas-muted: #E8E4DC;
   --color-surface-border: #E0DBD1;
   --color-text-primary: #1A1A18;
-  --color-text-secondary: #66645E;
-  --color-text-tertiary: #99958C;
+  --color-text-secondary: #5C5A54;
+  --color-text-tertiary: #75726B;
   --color-accent-zari: #C5A059;
-  --color-accent-zari-hover: #B38E46;
-  --color-accent-sage: #8A9A86;
-  --color-accent-sand: #D8C8B8;
+  --color-accent-zari-hover: #9E7933;
+  --color-accent-sage: #6B7B68;
+  --color-accent-sand: #B8A898;
 
   --font-editorial: var(--font-editorial);
   --font-serif: var(--font-editorial);
@@ -110,4 +110,15 @@ html.lenis, html.lenis body {
 
 .zari-glow {
   box-shadow: 0 0 25px -5px rgba(197, 160, 89, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

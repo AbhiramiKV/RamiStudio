@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/lib/stores/cartStore";
 import { CheckoutModal } from "@/components/checkout/CheckoutModal";
-import { X, Minus, Plus, Trash2, ShieldCheck, ArrowRight } from "lucide-react";
+import { X, Minus, Plus, Trash2, ShieldCheck, ArrowRight, Tag } from "lucide-react";
 
 export const CartDrawer: React.FC = () => {
   const {
@@ -19,10 +19,19 @@ export const CartDrawer: React.FC = () => {
     removeItem,
     getItemUnitPrice,
     getSubtotalUSD,
+    getTotalUSD,
+    appliedPromoCode,
+    promoDiscountUSD,
+    applyPromoCode,
+    removePromoCode,
     formatPrice,
   } = useCartStore();
 
+  const [promoInput, setPromoInput] = useState("");
+  const [promoFeedback, setPromoFeedback] = useState<{ message: string; isError: boolean } | null>(null);
+
   const subtotalUSD = getSubtotalUSD();
+  const totalUSD = getTotalUSD();
   const freeShippingThreshold = 1000;
   const progressPercent = Math.min(
     100,
@@ -32,6 +41,16 @@ export const CartDrawer: React.FC = () => {
     0,
     freeShippingThreshold - subtotalUSD
   );
+
+  const handleApplyPromo = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!promoInput.trim()) return;
+    const res = applyPromoCode(promoInput);
+    setPromoFeedback({ message: res.message, isError: !res.success });
+    if (res.success) {
+      setPromoInput("");
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -238,13 +257,65 @@ export const CartDrawer: React.FC = () => {
                   paddingBottom: "max(1.5rem, env(safe-area-inset-bottom, 0px))",
                 }}
               >
+                {/* Promo Code & Swatch Voucher Form */}
+                <div className="space-y-2 border-b border-surface-border/60 pb-3">
+                  {appliedPromoCode ? (
+                    <div className="flex items-center justify-between p-2.5 bg-accent-zari/10 border border-accent-zari/40 text-xs font-mono rounded-xs">
+                      <div className="flex items-center gap-2 text-accent-zari-hover">
+                        <Tag className="w-3.5 h-3.5" />
+                        <span className="font-medium">{appliedPromoCode}</span>
+                        <span>(-{formatPrice(promoDiscountUSD)})</span>
+                      </div>
+                      <button
+                        onClick={removePromoCode}
+                        className="text-text-tertiary hover:text-text-primary text-[10px] uppercase font-mono px-1.5 py-0.5 border border-surface-border bg-canvas-base"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleApplyPromo} className="space-y-1">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={promoInput}
+                          onChange={(e) => setPromoInput(e.target.value)}
+                          placeholder="Promo or Swatch Voucher (e.g. SWATCH25)"
+                          className="flex-1 bg-canvas-base border border-surface-border px-3 py-2 text-xs font-mono text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-text-primary"
+                        />
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-text-primary text-canvas-base text-xs font-mono uppercase tracking-wider hover:bg-accent-zari hover:text-text-primary transition-colors shrink-0"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                      {promoFeedback && (
+                        <p
+                          className={`text-[10px] font-mono ${
+                            promoFeedback.isError ? "text-red-500" : "text-emerald-600"
+                          }`}
+                        >
+                          {promoFeedback.message}
+                        </p>
+                      )}
+                    </form>
+                  )}
+                </div>
+
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs text-text-secondary font-mono">
                     <span>ACQUISITION SUBTOTAL</span>
                     <span>{formatPrice(subtotalUSD)}</span>
                   </div>
+                  {promoDiscountUSD > 0 && (
+                    <div className="flex items-center justify-between text-xs text-emerald-600 font-mono">
+                      <span>VOUCHER CREDIT</span>
+                      <span>-{formatPrice(promoDiscountUSD)}</span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between text-xs text-text-secondary font-mono">
-                    <span>ESTIMATED TAX & DUTIES</span>
+                    <span>ESTIMATED TAX &amp; DUTIES</span>
                     <span className="text-[10px] text-text-tertiary">
                       INCLUDED (DDP GUARANTEE)
                     </span>
@@ -252,7 +323,7 @@ export const CartDrawer: React.FC = () => {
                   <div className="flex items-center justify-between text-base font-serif pt-2 border-t border-surface-border/50 text-text-primary">
                     <span>TOTAL ESTIMATE</span>
                     <span className="font-mono text-sm font-medium">
-                      {formatPrice(subtotalUSD)}
+                      {formatPrice(totalUSD)}
                     </span>
                   </div>
                 </div>

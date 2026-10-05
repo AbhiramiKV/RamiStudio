@@ -1,39 +1,60 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import * as THREE from "three";
 import { LogoMonogram } from "@/components/branding/LogoMonogram";
 import { LogoWordmark } from "@/components/branding/LogoWordmark";
 
 export const CinematicSareeLanding: React.FC = () => {
-  const [visible, setVisible] = useState<boolean>(true);
+  const pathname = usePathname();
+  const [visible, setVisible] = useState<boolean>(false);
   const [fading, setFading] = useState<boolean>(false);
   const [logoRevealed, setLogoRevealed] = useState<boolean>(false);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number | null>(null);
 
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     setFading(true);
     setTimeout(() => {
       setVisible(false);
     }, 450);
-  };
+  }, []);
 
   useEffect(() => {
-    // Always present the short 1.8s entrance splash on load and refresh
-    const logoTimer = setTimeout(() => {
-      setLogoRevealed(true);
-    }, 700);
+    // Only show automatically on root path, if not seen in session, and motion is allowed
+    const hasSeen = typeof window !== "undefined" ? sessionStorage.getItem("rami_has_seen_splash") : "true";
+    const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const fadeTimer = setTimeout(() => {
-      setFading(true);
-    }, 1500);
+    if (pathname === "/" && !hasSeen && !prefersReducedMotion) {
+      sessionStorage.setItem("rami_has_seen_splash", "true");
+      const startTimer = setTimeout(() => {
+        setVisible(true);
+      }, 0);
 
-    const endTimer = setTimeout(() => {
-      setVisible(false);
-    }, 1950);
+      const logoTimer = setTimeout(() => {
+        setLogoRevealed(true);
+      }, 700);
 
-    // Support manual replay event from header/footer
+      const fadeTimer = setTimeout(() => {
+        setFading(true);
+      }, 1500);
+
+      const endTimer = setTimeout(() => {
+        setVisible(false);
+      }, 1950);
+
+      return () => {
+        clearTimeout(startTimer);
+        clearTimeout(logoTimer);
+        clearTimeout(fadeTimer);
+        clearTimeout(endTimer);
+      };
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    // Support manual replay event from header/footer or drawer
     const handleReplay = () => {
       setFading(false);
       setLogoRevealed(false);
@@ -43,15 +64,20 @@ export const CinematicSareeLanding: React.FC = () => {
       setTimeout(() => setVisible(false), 1950);
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && visible) {
+        dismiss();
+      }
+    };
+
     window.addEventListener("replay-saree-film", handleReplay);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      clearTimeout(logoTimer);
-      clearTimeout(fadeTimer);
-      clearTimeout(endTimer);
       window.removeEventListener("replay-saree-film", handleReplay);
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [visible, dismiss]);
 
   useEffect(() => {
     if (!visible) return;

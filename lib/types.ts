@@ -74,12 +74,17 @@ export type BlouseBack =
 
 export type BlouseLining = "mul-mul-cotton" | "pure-silk" | "padded-cups";
 
+export type BlouseOpening = "front-hook" | "back-hook" | "side-zip";
+export type BlouseCut = "princess-cut" | "single-katori" | "double-katori" | "darted";
+
 export interface BlouseMeasurements {
   standardSize?: "XS (32)" | "S (34)" | "M (36)" | "L (38)" | "XL (40)" | "XXL (42)" | "Custom";
   bust?: number;
   underBust?: number;
   waist?: number;
+  blouseLength?: number;
   shoulder?: number;
+  armhole?: number;
   sleeveLength?: number;
   frontNeckDepth?: number;
   backNeckDepth?: number;
@@ -91,6 +96,8 @@ export interface BlouseCustomization {
   neckline?: BlouseNeckline;
   sleeve?: BlouseSleeve;
   back?: BlouseBack;
+  opening?: BlouseOpening;
+  cut?: BlouseCut;
   lining?: BlouseLining;
   measurements?: BlouseMeasurements;
   priceUSD: number;

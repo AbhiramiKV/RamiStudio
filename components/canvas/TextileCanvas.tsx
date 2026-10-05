@@ -514,6 +514,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileDevice ? 1.5 : 2.0));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.08;
+    renderer.domElement.style.touchAction = "pan-y";
     mount.innerHTML = "";
     mount.appendChild(renderer.domElement);
 
@@ -792,9 +793,12 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
         const cameraDir = camera.getWorldDirection(new THREE.Vector3()).negate();
         dragPlane.setFromNormalAndCoplanarPoint(cameraDir, hitPoint);
 
-        try {
-          renderer.domElement.setPointerCapture(e.pointerId);
-        } catch {}
+        if (e.pointerType !== "touch") {
+          setIsGrabbing(true);
+          try {
+            renderer.domElement.setPointerCapture(e.pointerId);
+          } catch {}
+        }
       } else {
         isDraggingCloth = false;
         // On desktop mouse, immediately allow orbit
@@ -811,7 +815,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       if (!isPointerDown) return;
 
       // Smart Gesture Disambiguation on Mobile Touch:
-      if (e.pointerType === "touch" && !hasDecidedGesture && !isDraggingCloth) {
+      if (e.pointerType === "touch" && !hasDecidedGesture) {
         const dx = Math.abs(e.clientX - startPointerX);
         const dy = Math.abs(e.clientY - startPointerY);
 
@@ -820,11 +824,20 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
           isVerticalScroll = true;
           hasDecidedGesture = true;
           isPointerDown = false;
+          if (isDraggingCloth) {
+            engine.releaseGrab();
+            isDraggingCloth = false;
+            setIsGrabbing(false);
+          }
           return;
-        } else if (dx > 8) {
-          // Dominant horizontal gesture: engage 3D turntable orbit
+        } else if (dx > 8 || (isDraggingCloth && (dx > 6 || dy > 6))) {
+          // Dominant horizontal or intentional cloth grab gesture
           hasDecidedGesture = true;
-          setIsOrbiting(true);
+          if (isDraggingCloth) {
+            setIsGrabbing(true);
+          } else {
+            setIsOrbiting(true);
+          }
           try {
             renderer.domElement.setPointerCapture(e.pointerId);
           } catch {}

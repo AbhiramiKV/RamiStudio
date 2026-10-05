@@ -8,12 +8,16 @@ interface CartState {
   isCheckoutOpen: boolean;
   items: CartItem[];
   currency: CurrencyCode;
+  appliedPromoCode: string | null;
+  promoDiscountUSD: number;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
   openCheckout: () => void;
   closeCheckout: () => void;
   setCurrency: (code: CurrencyCode) => void;
+  applyPromoCode: (code: string) => { success: boolean; message: string };
+  removePromoCode: () => void;
   addItem: (
     product: SareeProduct,
     selectedColorway: Colorway,
@@ -25,6 +29,7 @@ interface CartState {
   clearCart: () => void;
   getItemUnitPrice: (item: CartItem) => number;
   getSubtotalUSD: () => number;
+  getTotalUSD: () => number;
   formatPrice: (amountUSD: number) => string;
 }
 
@@ -35,6 +40,8 @@ export const useCartStore = create<CartState>()(
       isCheckoutOpen: false,
       items: [],
       currency: "USD",
+      appliedPromoCode: null,
+      promoDiscountUSD: 0,
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
@@ -44,6 +51,21 @@ export const useCartStore = create<CartState>()(
       closeCheckout: () => set({ isCheckoutOpen: false }),
 
       setCurrency: (code: CurrencyCode) => set({ currency: code }),
+
+      applyPromoCode: (code: string) => {
+        const clean = code.trim().toUpperCase();
+        if (clean === "SWATCH25" || clean === "SWATCH-25" || clean === "ARCHIVE25") {
+          set({ appliedPromoCode: clean, promoDiscountUSD: 25 });
+          return { success: true, message: "$25 Swatch Archive credit applied!" };
+        } else if (clean === "RAMI10" || clean === "HERITAGE10") {
+          const discount = Math.round(get().getSubtotalUSD() * 0.1);
+          set({ appliedPromoCode: clean, promoDiscountUSD: discount });
+          return { success: true, message: "10% Connoisseur invitation credit applied!" };
+        }
+        return { success: false, message: "Invalid voucher code. Please check and retry." };
+      },
+
+      removePromoCode: () => set({ appliedPromoCode: null, promoDiscountUSD: 0 }),
 
       getItemUnitPrice: (item: CartItem) => {
         let price = item.product.priceUSD;
@@ -72,15 +94,19 @@ export const useCartStore = create<CartState>()(
       addItem: (product, selectedColorway, withBlouse = false, customizations) => {
         set((state) => {
           const customKey = customizations
-            ? `${customizations.fallPico}-${customizations.blouse.styleOption}-${customizations.petticoat?.enabled ? "pet" : "nopet"}-${customizations.prePleated?.enabled ? "pleat" : "nopleat"}`
-            : withBlouse ? "blouse" : "base";
+            ? `${customizations.fallPico}-${customizations.blouse.enabled ? `blouse-${customizations.blouse.styleOption}-${customizations.blouse.neckline || ""}-${customizations.blouse.sleeve || ""}-${customizations.blouse.measurements?.standardSize || "custom"}` : "nobig"}-${customizations.petticoat?.enabled ? `pet-${customizations.petticoat.waistSize}` : "nopet"}-${customizations.prePleated?.enabled ? `pleat-${customizations.prePleated.waistInches}` : "nopleat"}`
+            : withBlouse ? "blouse-unstitched" : "base";
 
           const itemId = `${product.id}-${selectedColorway.id}-${customKey}`;
           const existingIndex = state.items.findIndex((i) => i.id === itemId);
 
           if (existingIndex > -1) {
             const updated = [...state.items];
-            updated[existingIndex].quantity += 1;
+            const maxPieces = product.totalPieces || 99;
+            updated[existingIndex].quantity = Math.min(
+              maxPieces,
+              updated[existingIndex].quantity + 1
+            );
             return { items: updated, isOpen: true };
           }
 
@@ -128,19 +154,27 @@ export const useCartStore = create<CartState>()(
           return;
         }
         set((state) => ({
-          items: state.items.map((i) =>
-            i.id === itemId ? { ...i, quantity } : i
-          ),
+          items: state.items.map((i) => {
+            if (i.id !== itemId) return i;
+            const capped = Math.min(i.product.totalPieces || 99, quantity);
+            return { ...i, quantity: capped };
+          }),
         }));
       },
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], appliedPromoCode: null, promoDiscountUSD: 0 }),
 
       getSubtotalUSD: () => {
         const { items, getItemUnitPrice } = get();
         return items.reduce((total, item) => {
           return total + getItemUnitPrice(item) * item.quantity;
         }, 0);
+      },
+
+      getTotalUSD: () => {
+        const subtotal = get().getSubtotalUSD();
+        const discount = get().promoDiscountUSD;
+        return Math.max(0, subtotal - discount);
       },
 
       formatPrice: (amountUSD: number) => {
@@ -156,7 +190,12 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "rami-cart-storage",
-      partialize: (state) => ({ items: state.items, currency: state.currency }),
+      partialize: (state) => ({
+        items: state.items,
+        currency: state.currency,
+        appliedPromoCode: state.appliedPromoCode,
+        promoDiscountUSD: state.promoDiscountUSD,
+      }),
     }
   )
 );

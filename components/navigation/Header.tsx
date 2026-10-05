@@ -7,8 +7,9 @@ import { LogoWordmark } from "@/components/branding/LogoWordmark";
 import { LogoMonogram } from "@/components/branding/LogoMonogram";
 import { CURRENCY_RATES } from "@/lib/catalogData";
 import { CurrencyCode } from "@/lib/types";
-import { ShoppingBag, ChevronDown, Menu } from "lucide-react";
+import { ShoppingBag, ChevronDown, Menu, Search } from "lucide-react";
 import { MobileNavDrawer } from "./MobileNavDrawer";
+import { SearchModal } from "./SearchModal";
 
 const emptySubscribe = () => () => {};
 
@@ -16,6 +17,7 @@ export const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const bannerRef = useRef<HTMLDivElement>(null);
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const { items, openCart, currency, setCurrency } = useCartStore();
@@ -89,22 +91,28 @@ export const Header: React.FC = () => {
 
               <nav className="hidden lg:flex items-center gap-6 text-[11px] font-mono tracking-[0.14em] uppercase text-text-secondary">
                 <Link
-                  href="/#curated-drop"
+                  href="/sarees"
                   className="hover:text-text-primary transition-colors"
                 >
-                  Heirlooms
+                  Archive
                 </Link>
                 <Link
-                  href="/#fabric-lab"
+                  href="/about"
                   className="hover:text-text-primary transition-colors"
                 >
-                  Weave Guide
+                  Maison
                 </Link>
                 <Link
-                  href="/#journal"
+                  href="/journal"
                   className="hover:text-text-primary transition-colors"
                 >
-                  Artisan Monograph
+                  Journal
+                </Link>
+                <Link
+                  href="/swatches"
+                  className="hover:text-text-primary transition-colors"
+                >
+                  Swatch Folio
                 </Link>
               </nav>
             </div>
@@ -121,8 +129,20 @@ export const Header: React.FC = () => {
               </Link>
             </div>
 
-            {/* Right: Currency Switcher & Bag Drawer Trigger */}
+            {/* Right: Currency Switcher, Search & Bag Drawer Trigger */}
             <div className="flex items-center gap-2 sm:gap-4 md:gap-5">
+              {/* Quick Search Trigger */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-colors p-2 min-h-[44px] min-w-[44px] justify-center rounded-xs"
+                aria-label="Search Collection"
+                title="Search (⌘K)"
+              >
+                <Search className="w-4 h-4" />
+                <span className="hidden xl:inline text-[10px] font-mono tracking-wider text-text-tertiary border border-surface-border px-1.5 py-0.5 rounded-xs">
+                  ⌘K
+                </span>
+              </button>
               {/* Currency Switcher (Desktop / Tablet) */}
               <div className="relative hidden md:block">
                 <button
@@ -193,6 +213,12 @@ export const Header: React.FC = () => {
       <MobileNavDrawer
         isOpen={mobileNavOpen}
         onClose={() => setMobileNavOpen(false)}
+      />
+
+      {/* Global Quick Search Modal */}
+      <SearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
       />
     </>
   );

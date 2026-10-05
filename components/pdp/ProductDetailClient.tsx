@@ -11,6 +11,7 @@ import { SilkMarkModal } from "@/components/trust/SilkMarkModal";
 import { SwatchBoxModal } from "@/components/trust/SwatchBoxModal";
 import { SareeCustomizationModal } from "@/components/saree-services/SareeCustomizationModal";
 import { DrapeVideoModal } from "@/components/pdp/DrapeVideoModal";
+import { ReviewSubmissionModal } from "@/components/pdp/ReviewSubmissionModal";
 import { WhatsAppConcierge } from "@/components/concierge/WhatsAppConcierge";
 import {
   Sparkles,
@@ -23,6 +24,7 @@ import {
   Scissors,
   Package,
   Star,
+  PenLine,
 } from "lucide-react";
 
 interface ProductDetailClientProps {
@@ -45,6 +47,8 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
   const [isSwatchOpen, setIsSwatchOpen] = useState(false);
   const [isCustomizationOpen, setIsCustomizationOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewsList, setReviewsList] = useState(saree.reviews);
 
   // Saree Customizations state
   const [customizations, setCustomizations] = useState<SareeCustomizations>({
@@ -514,18 +518,31 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
           {/* Verified Customer Reviews */}
           <div className="space-y-4 pt-4 border-t border-surface-border">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-mono tracking-widest uppercase text-text-primary">
-                Verified Connoisseur Reviews ({saree.reviews.length})
-              </h3>
-              <div className="flex items-center gap-1 text-accent-zari">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-accent-zari" />
-                ))}
+              <div className="space-y-0.5">
+                <h3 className="text-xs font-mono tracking-widest uppercase text-text-primary">
+                  Verified Connoisseur Reviews ({reviewsList.length})
+                </h3>
+                <div className="flex items-center gap-1 text-accent-zari">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 fill-accent-zari" />
+                  ))}
+                  <span className="text-[10px] font-mono text-text-tertiary ml-1.5">
+                    (5.0 / 5.0)
+                  </span>
+                </div>
               </div>
+
+              <button
+                onClick={() => setIsReviewModalOpen(true)}
+                className="px-3 py-1.5 border border-surface-border hover:border-text-primary text-[11px] font-mono uppercase tracking-wider text-text-primary flex items-center gap-1.5 transition-colors rounded-xs"
+              >
+                <PenLine className="w-3 h-3 text-accent-zari" />
+                <span>Write a Review</span>
+              </button>
             </div>
 
             <div className="space-y-4">
-              {saree.reviews.map((rev) => (
+              {reviewsList.map((rev) => (
                 <div key={rev.id} className="p-4 bg-canvas-elevated border border-surface-border rounded-xs space-y-2 text-xs">
                   <div className="flex items-start justify-between">
                     <div>
@@ -643,6 +660,13 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
         isOpen={isVideoModalOpen}
         onClose={() => setIsVideoModalOpen(false)}
         saree={saree}
+      />
+
+      <ReviewSubmissionModal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        saree={saree}
+        onSubmitReview={(newReview) => setReviewsList([newReview, ...reviewsList])}
       />
 
       {/* Floating Concierge */}

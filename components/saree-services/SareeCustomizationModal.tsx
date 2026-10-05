@@ -8,6 +8,8 @@ import {
   BlouseNeckline,
   BlouseSleeve,
   BlouseBack,
+  BlouseOpening,
+  BlouseCut,
   BlouseLining,
 } from "@/lib/types";
 import { useCartStore } from "@/lib/stores/cartStore";
@@ -16,6 +18,8 @@ import {
   Scissors,
   Check,
   ChevronRight,
+  Info,
+  Ruler,
 } from "lucide-react";
 
 type StandardSize = "XS (32)" | "S (34)" | "M (36)" | "L (38)" | "XL (40)" | "XXL (42)" | "Custom";
@@ -54,18 +58,46 @@ export const SareeCustomizationModal: React.FC<SareeCustomizationModalProps> = (
   const [backCut, setBackCut] = useState<BlouseBack>(
     initialCustomizations?.blouse.back || "deep-u-potli"
   );
+  const [opening, setOpening] = useState<BlouseOpening>(
+    initialCustomizations?.blouse.opening || "front-hook"
+  );
+  const [cut, setCut] = useState<BlouseCut>(
+    initialCustomizations?.blouse.cut || "princess-cut"
+  );
   const [lining, setLining] = useState<BlouseLining>(
     initialCustomizations?.blouse.lining || "mul-mul-cotton"
   );
-  const [standardSize, setStandardSize] = useState<
-    "XS (32)" | "S (34)" | "M (36)" | "L (38)" | "XL (40)" | "XXL (42)" | "Custom"
-  >(initialCustomizations?.blouse.measurements?.standardSize || "M (36)");
+  const [standardSize, setStandardSize] = useState<StandardSize>(
+    initialCustomizations?.blouse.measurements?.standardSize || "M (36)"
+  );
 
+  // 8-Point Tailoring Measurements
   const [customBust, setCustomBust] = useState<number>(
     initialCustomizations?.blouse.measurements?.bust || 36
   );
   const [customWaist, setCustomWaist] = useState<number>(
     initialCustomizations?.blouse.measurements?.waist || 30
+  );
+  const [customUnderBust, setCustomUnderBust] = useState<number>(
+    initialCustomizations?.blouse.measurements?.underBust || 31
+  );
+  const [customBlouseLength, setCustomBlouseLength] = useState<number>(
+    initialCustomizations?.blouse.measurements?.blouseLength || 14.5
+  );
+  const [customShoulder, setCustomShoulder] = useState<number>(
+    initialCustomizations?.blouse.measurements?.shoulder || 14.5
+  );
+  const [customArmhole, setCustomArmhole] = useState<number>(
+    initialCustomizations?.blouse.measurements?.armhole || 16.5
+  );
+  const [customSleeveLength, setCustomSleeveLength] = useState<number>(
+    initialCustomizations?.blouse.measurements?.sleeveLength || 10.5
+  );
+  const [customFrontNeckDepth, setCustomFrontNeckDepth] = useState<number>(
+    initialCustomizations?.blouse.measurements?.frontNeckDepth || 7.0
+  );
+  const [customBackNeckDepth, setCustomBackNeckDepth] = useState<number>(
+    initialCustomizations?.blouse.measurements?.backNeckDepth || 9.5
   );
 
   const [petticoatEnabled, setPetticoatEnabled] = useState(
@@ -126,13 +158,22 @@ export const SareeCustomizationModal: React.FC<SareeCustomizationModalProps> = (
         neckline: blouseStyleOption === "custom-tailored" ? neckline : undefined,
         sleeve: blouseStyleOption === "custom-tailored" ? sleeve : undefined,
         back: blouseStyleOption === "custom-tailored" ? backCut : undefined,
+        opening: blouseStyleOption === "custom-tailored" ? opening : undefined,
+        cut: blouseStyleOption === "custom-tailored" ? cut : undefined,
         lining: blouseStyleOption === "custom-tailored" ? lining : undefined,
         measurements:
           blouseStyleOption === "custom-tailored"
             ? {
                 standardSize,
                 bust: customBust,
+                underBust: customUnderBust,
                 waist: customWaist,
+                blouseLength: customBlouseLength,
+                shoulder: customShoulder,
+                armhole: customArmhole,
+                sleeveLength: customSleeveLength,
+                frontNeckDepth: customFrontNeckDepth,
+                backNeckDepth: customBackNeckDepth,
               }
             : undefined,
         priceUSD:
@@ -339,37 +380,46 @@ export const SareeCustomizationModal: React.FC<SareeCustomizationModalProps> = (
                 </div>
 
                 {prePleatedEnabled && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-surface-border text-xs font-mono animate-fadeIn">
-                    <div>
-                      <label className="block text-text-secondary uppercase mb-1">
-                        Waist Measurement (Inches):
-                      </label>
-                      <input
-                        type="number"
-                        min={24}
-                        max={48}
-                        value={waistInches}
-                        onChange={(e) => setWaistInches(Number(e.target.value))}
-                        className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
-                      />
+                  <div className="space-y-4 pt-3 border-t border-surface-border text-xs font-mono animate-fadeIn">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-text-secondary uppercase mb-1">
+                          Exact Waist Measurement (Inches):
+                        </label>
+                        <input
+                          type="number"
+                          min={24}
+                          max={48}
+                          value={waistInches}
+                          onChange={(e) => setWaistInches(Number(e.target.value))}
+                          className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-text-secondary uppercase mb-1">
+                          Wearer Height with Heels:
+                        </label>
+                        <select
+                          value={heightFeet}
+                          onChange={(e) => setHeightFeet(e.target.value)}
+                          className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                        >
+                          {["5'0\"", "5'2\"", "5'4\"", "5'5\"", "5'6\"", "5'8\"", "5'10\"", "6'0\""].map(
+                            (h) => (
+                              <option key={h} value={h}>
+                                {h}
+                              </option>
+                            )
+                          )}
+                        </select>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-text-secondary uppercase mb-1">
-                        Wearer Height with Heels:
-                      </label>
-                      <select
-                        value={heightFeet}
-                        onChange={(e) => setHeightFeet(e.target.value)}
-                        className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
-                      >
-                        {["5'0\"", "5'2\"", "5'4\"", "5'5\"", "5'6\"", "5'8\"", "5'10\"", "6'0\""].map(
-                          (h) => (
-                            <option key={h} value={h}>
-                              {h}
-                            </option>
-                          )
-                        )}
-                      </select>
+
+                    <div className="flex items-start gap-2 p-3 bg-canvas-base border border-surface-border rounded-xs text-[11px] text-text-secondary">
+                      <Info className="w-4 h-4 text-accent-zari-hover shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Dynamic Fit Allowance:</strong> Every pre-pleated drape features our proprietary 3-stage concealed stainless bar-eye array, offering <strong>-1&quot;, 0, and +1&quot;</strong> flexible adjustment for dining comfort and posture changes.
+                      </span>
                     </div>
                   </div>
                 )}
@@ -507,10 +557,65 @@ export const SareeCustomizationModal: React.FC<SareeCustomizationModalProps> = (
                     </div>
                   </div>
 
+                  {/* Opening Closure & Pattern Cut */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Opening Selector */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono uppercase tracking-wider text-text-secondary block">
+                        4. Opening Closure:
+                      </label>
+                      <div className="grid grid-cols-3 gap-2 text-xs font-mono">
+                        {[
+                          { id: "front-hook", label: "Front Hook" },
+                          { id: "back-hook", label: "Back Hook" },
+                          { id: "side-zip", label: "Side Zip" },
+                        ].map((item) => (
+                          <button
+                            key={item.id}
+                            onClick={() => setOpening(item.id as BlouseOpening)}
+                            className={`p-2 border text-center rounded-xs transition-colors ${
+                              opening === item.id
+                                ? "bg-text-primary text-canvas-base border-text-primary"
+                                : "bg-canvas-base border-surface-border text-text-secondary hover:border-text-primary"
+                            }`}
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Cut Pattern */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-mono uppercase tracking-wider text-text-secondary block">
+                        5. Tailoring Cut / Pattern:
+                      </label>
+                      <div className="grid grid-cols-3 gap-2 text-xs font-mono">
+                        {[
+                          { id: "princess-cut", label: "Princess Cut" },
+                          { id: "darted", label: "3-Darted" },
+                          { id: "katori", label: "Katori Cut" },
+                        ].map((item) => (
+                          <button
+                            key={item.id}
+                            onClick={() => setCut(item.id as BlouseCut)}
+                            className={`p-2 border text-center rounded-xs transition-colors ${
+                              cut === item.id
+                                ? "bg-text-primary text-canvas-base border-text-primary"
+                                : "bg-canvas-base border-surface-border text-text-secondary hover:border-text-primary"
+                            }`}
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Lining & Padding */}
                   <div className="space-y-2">
                     <label className="text-xs font-mono uppercase tracking-wider text-text-secondary block">
-                      4. Lining & Cups:
+                      6. Interior Lining & Padding:
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
                       {[
@@ -534,13 +639,14 @@ export const SareeCustomizationModal: React.FC<SareeCustomizationModalProps> = (
                   </div>
 
                   {/* Sizing inputs */}
-                  <div className="p-4 bg-canvas-elevated border border-surface-border space-y-3">
+                  <div className="p-4 bg-canvas-elevated border border-surface-border space-y-3 rounded-xs">
                     <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-text-primary font-medium">
-                        Standard Size or Custom Inches
-                      </span>
+                      <div className="flex items-center gap-1.5 text-text-primary font-medium">
+                        <Ruler className="w-3.5 h-3.5 text-accent-zari-hover" />
+                        <span>7. Standard Sizing or Bespoke 8-Point Metrology</span>
+                      </div>
                       <span className="text-[10px] text-text-tertiary">
-                        Our master cutter reviews every order
+                        Master cutter verified
                       </span>
                     </div>
 
@@ -550,10 +656,10 @@ export const SareeCustomizationModal: React.FC<SareeCustomizationModalProps> = (
                           <button
                             key={sz}
                             onClick={() => setStandardSize(sz)}
-                            className={`px-3 py-1.5 border rounded-xs ${
+                            className={`px-3 py-1.5 border rounded-xs transition-colors ${
                               standardSize === sz
                                 ? "bg-text-primary text-canvas-base border-text-primary"
-                                : "bg-canvas-base border-surface-border text-text-secondary"
+                                : "bg-canvas-base border-surface-border text-text-secondary hover:border-text-primary"
                             }`}
                           >
                             {sz}
@@ -563,28 +669,119 @@ export const SareeCustomizationModal: React.FC<SareeCustomizationModalProps> = (
                     </div>
 
                     {standardSize === "Custom" && (
-                      <div className="grid grid-cols-2 gap-3 pt-2 text-xs font-mono">
-                        <div>
-                          <label className="text-text-tertiary block mb-1">
-                            Bust (Inches):
-                          </label>
-                          <input
-                            type="number"
-                            value={customBust}
-                            onChange={(e) => setCustomBust(Number(e.target.value))}
-                            className="w-full bg-canvas-base border border-surface-border p-2"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-text-tertiary block mb-1">
-                            Under-Bust / Waist (Inches):
-                          </label>
-                          <input
-                            type="number"
-                            value={customWaist}
-                            onChange={(e) => setCustomWaist(Number(e.target.value))}
-                            className="w-full bg-canvas-base border border-surface-border p-2"
-                          />
+                      <div className="space-y-3 pt-2 text-xs font-mono animate-fadeIn">
+                        <p className="text-[11px] text-text-secondary font-light">
+                          Specify your body measurements in inches. All bespoke orders are cut with 2.0 inches of hidden French-seam margin allowance on both sides.
+                        </p>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div>
+                            <label className="text-text-tertiary block mb-1">
+                              Bust:
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={customBust}
+                              onChange={(e) => setCustomBust(Number(e.target.value))}
+                              className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-text-tertiary block mb-1">
+                              Under-Bust Circumference:
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={customUnderBust}
+                              onChange={(e) => setCustomUnderBust(Number(e.target.value))}
+                              className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-text-tertiary block mb-1">
+                              Natural Waist:
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={customWaist}
+                              onChange={(e) => setCustomWaist(Number(e.target.value))}
+                              className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-text-tertiary block mb-1">
+                              Blouse Length:
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={customBlouseLength}
+                              onChange={(e) => setCustomBlouseLength(Number(e.target.value))}
+                              className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-text-tertiary block mb-1">
+                              Shoulder Width:
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={customShoulder}
+                              onChange={(e) => setCustomShoulder(Number(e.target.value))}
+                              className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-text-tertiary block mb-1">
+                              Armhole Circumference:
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={customArmhole}
+                              onChange={(e) => setCustomArmhole(Number(e.target.value))}
+                              className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-text-tertiary block mb-1">
+                              Sleeve Length:
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={customSleeveLength}
+                              onChange={(e) => setCustomSleeveLength(Number(e.target.value))}
+                              className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-text-tertiary block mb-1">
+                              Front Neck Depth:
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={customFrontNeckDepth}
+                              onChange={(e) => setCustomFrontNeckDepth(Number(e.target.value))}
+                              className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-text-tertiary block mb-1">
+                              Back Neck Depth:
+                            </label>
+                            <input
+                              type="number"
+                              step="0.5"
+                              value={customBackNeckDepth}
+                              onChange={(e) => setCustomBackNeckDepth(Number(e.target.value))}
+                              className="w-full bg-canvas-base border border-surface-border p-2 text-text-primary focus:outline-none focus:border-text-primary"
+                            />
+                          </div>
                         </div>
                       </div>
                     )}

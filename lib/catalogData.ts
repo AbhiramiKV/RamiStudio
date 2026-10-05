@@ -8,6 +8,13 @@ export const CURRENCY_RATES: Record<string, CurrencyRate> = {
   AED: { code: "AED", symbol: "AED ", rate: 3.67 },
 };
 
+export const VALID_VOUCHERS: Record<string, { discountUSD: number; description: string }> = {
+  SWATCH25: { discountUSD: 25, description: "$25 Swatch Archive credit reimbursed" },
+  "SWATCH-25": { discountUSD: 25, description: "$25 Swatch Archive credit reimbursed" },
+  ARCHIVE25: { discountUSD: 25, description: "$25 Swatch Archive credit reimbursed" },
+  HERITAGE10: { discountUSD: 140, description: "10% Connoisseur invitation privilege" },
+};
+
 export const SWATCH_BOX_OFFER = {
   id: "swatch-box-archive",
   title: "The Silk & Zari Tactile Swatch Archive",
@@ -22,7 +29,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     id: "saree-01",
     slug: "alabaster-monolith",
     title: "Swarna Hansa: The Alabaster Saree",
-    culturalName: "स्वर्ण हंस (Golden Swan)",
+    culturalName: "स्वर्ण हंस (Golden Swan · Svarna Hamsa)",
     subTitle: "Pure Mulberry Kanchipuram Korvai Silk with Certified Matte Silver Zari",
     editionNumber: "01 / 18",
     totalPieces: 18,
@@ -53,9 +60,9 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     ],
     specs: {
       gsm: 210,
-      weightGrams: 685,
-      warpCount: "2/120s Degummed Pure Mulberry Silk",
-      weftCount: "3-Ply Filature Cultivated Silk",
+      weightGrams: 820,
+      warpCount: "2/120s Degummed Pure Mulberry Silk (108 EPI)",
+      weftCount: "3-Ply Filature Cultivated Silk (96 PPI)",
       composition: "98% Pure Mulberry Silk, 2% Certified Silver Electroplated Wire",
       loomType: "Traditional Two-Artisan Throw-Shuttle Pit Loom (Korvai Interlock)",
       originRegion: "Chinna Kanchipuram, Tamil Nadu",
@@ -78,12 +85,12 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       quote: "When two weavers toss shuttles across the Korvai divide in unison, the cloth breathes. You cannot rush silk tension.",
     },
     certification: {
-      silkMarkLicenseNo: "SM-TN-2026-8841",
+      silkMarkLicenseNo: "SMOI/TN/2026/8841",
       silkMarkCertified: true,
       zariSilverPercentage: 98.2,
       zariLabReportUrl: "/docs/certificates/zari-test-saree-01.pdf",
       handloomMarkCertified: true,
-      craftClusterRegNo: "IND-GI-TN-0012",
+      craftClusterRegNo: "IND-GI-TN-0088",
     },
     description:
       "Woven in the historic weavers' quarter of Chinna Kanchipuram, this heirloom celebrates the sacred Korvai interlocking technique where the border and body are woven with distinct shuttles without seams. Heavy pure mulberry silk yields structured, knife-sharp pleats that drape with regal grace.",
@@ -147,7 +154,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     id: "saree-02",
     slug: "gossamer-sage-mirage",
     title: "Marakatha Katan: The Sage Mirage",
-    culturalName: "मरकत कातान (Emerald Mist)",
+    culturalName: "मरकत कातान (Emerald Mist · Marakata Katan)",
     subTitle: "Featherweight Banarasi Silk Organza with Watermark Tissue Weave",
     editionNumber: "02 / 12",
     totalPieces: 12,
@@ -171,9 +178,9 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     ],
     specs: {
       gsm: 64,
-      weightGrams: 310,
-      warpCount: "20/22 Denier High-Twist Katan Organza Silk",
-      weftCount: "Handspun Organza Warp + Antique Tissue Zari",
+      weightGrams: 340,
+      warpCount: "20/22 Denier High-Twist Katan Organza Silk (84 EPI)",
+      weftCount: "Handspun Organza Warp + Antique Tissue Zari (76 PPI)",
       composition: "100% Pure Katan Silk Organza with Antique Gold Tissue Pallu",
       loomType: "Traditional Banarasi Frame Loom with Jacquard Punch-Cards",
       originRegion: "Madanpura, Varanasi, Uttar Pradesh",
@@ -196,15 +203,15 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       quote: "Organza must not feel like plastic. When spun from real mulberry cocoon filaments, it floats on warm air like mist.",
     },
     certification: {
-      silkMarkLicenseNo: "SM-UP-2026-3192",
+      silkMarkLicenseNo: "SMOI/UP/2026/3192",
       silkMarkCertified: true,
       zariSilverPercentage: 92.5,
       zariLabReportUrl: "/docs/certificates/zari-test-saree-02.pdf",
       handloomMarkCertified: true,
-      craftClusterRegNo: "IND-GI-UP-0044",
+      craftClusterRegNo: "IND-GI-UP-0099",
     },
     description:
-      "Weighing a mere 310 grams, The Sage Mirage redefines gossamer evening luxury. The silk organza is woven using ultra-fine high-twist filament threads that refract candlelight with a quiet, mist-like luminosity, holding its crisp form without puffing uncomfortably.",
+      "Weighing a mere 340 grams, The Sage Mirage redefines gossamer evening luxury. The silk organza is woven using ultra-fine high-twist filament threads that refract candlelight with a quiet, mist-like luminosity, holding its crisp form without puffing uncomfortably.",
     philosophy:
       "Weightlessness as a luxury proposition. A fluid cloud that moves with the wearer's micro-gestures.",
     auspiciousOccasions: [
@@ -252,7 +259,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     id: "saree-03",
     slug: "obsidian-veil-shot-silk",
     title: "Krishna Dhoop-Chhaon: The Obsidian Veil",
-    culturalName: "धूप-छाँव (Sunlight & Shadow)",
+    culturalName: "धूप-छाँव (Sunlight & Shadow · Dhoop-Chhaon)",
     subTitle: "Dual-Tone Shot Silk Twill (Carbon Warp × Pale Botanical Olive Weft)",
     editionNumber: "03 / 15",
     totalPieces: 15,
@@ -276,9 +283,9 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     ],
     specs: {
       gsm: 175,
-      weightGrams: 540,
-      warpCount: "2/100s Mulberry Silk (Carbon Vat-Dyed)",
-      weftCount: "2/80s Cross-Dyed Botanical Olive Filament",
+      weightGrams: 580,
+      warpCount: "2/100s Mulberry Silk (Carbon Vat-Dyed, 104 EPI)",
+      weftCount: "2/80s Cross-Dyed Botanical Olive Filament (92 PPI)",
       composition: "100% Hand-Reeled Pure Mulberry Silk",
       loomType: "Traditional Throw-Shuttle Pit Loom with Hand Selvedge",
       originRegion: "Arani Handloom Cluster, Tamil Nadu",
@@ -301,12 +308,12 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       quote: "Dhoop-Chhaon is not two colors printed together. It is two lives woven together—one warp, one weft, shifting as you walk.",
     },
     certification: {
-      silkMarkLicenseNo: "SM-TN-2026-6204",
+      silkMarkLicenseNo: "SMOI/TN/2026/6204",
       silkMarkCertified: true,
       zariSilverPercentage: 0,
       zariLabReportUrl: "/docs/certificates/silk-purity-saree-03.pdf",
       handloomMarkCertified: true,
-      craftClusterRegNo: "IND-GI-TN-0038",
+      craftClusterRegNo: "IND-GI-TN-0112",
     },
     description:
       "An authentic exploration of Dhoop-Chhaon (Sunlight-Shadow). The warp is dyed in deep cast-iron charcoal while the weft carries botanical olive. As the wearer moves, the surface shifts subtly between midnight carbon depth and veiled green sheen.",
@@ -357,7 +364,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     id: "saree-04",
     slug: "sand-architecture-tussar",
     title: "Vanya Maya: The Sand Architecture",
-    culturalName: "वन्य माया (Forest Whispers)",
+    culturalName: "वन्य माया (Forest Whispers · Vanya Maya)",
     subTitle: "Textured Wild Tussar Handloom with Matte Brushed Bronze Selvedge",
     editionNumber: "04 / 20",
     totalPieces: 20,
@@ -381,9 +388,9 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     ],
     specs: {
       gsm: 190,
-      weightGrams: 590,
-      warpCount: "Handspun Wild Tussar Filament",
-      weftCount: "Raw Ghicha Slub Yarn (Unbleached)",
+      weightGrams: 620,
+      warpCount: "Handspun Wild Tussar Filament (64 EPI)",
+      weftCount: "Raw Ghicha Slub Yarn - Unbleached Ahimsa Silk (56 PPI)",
       composition: "100% Organic Wild Tussar Forest Silk",
       loomType: "Counterbalance Handloom with Bamboo Reed Shuttle",
       originRegion: "Bhagalpur Silk Guild, Bihar",
@@ -406,7 +413,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       quote: "The slub in tussar silk is not an imperfection—it is the memory of the oak and asan trees the silkworm lived upon.",
     },
     certification: {
-      silkMarkLicenseNo: "SM-BH-2026-1189",
+      silkMarkLicenseNo: "SMOI/BH/2026/1189",
       silkMarkCertified: true,
       zariSilverPercentage: 88.0,
       zariLabReportUrl: "/docs/certificates/tussar-purity-saree-04.pdf",
@@ -459,4 +466,6 @@ export const SAREE_COLLECTION: SareeProduct[] = [
     ],
   },
 ];
+
+export const SAREES_CATALOG = SAREE_COLLECTION;
 

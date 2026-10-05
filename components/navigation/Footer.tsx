@@ -140,16 +140,19 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Bottom Tier: Links & Copyright */}
-          <div className="pt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 text-[11px] font-mono tracking-widest text-text-secondary uppercase">
-            <div className="flex flex-wrap gap-8 items-center">
-              <Link href="/#curated-drop" className="hover:text-text-primary transition-colors">
-                Heirlooms
+          <div className="pt-10 space-y-6 text-[11px] font-mono tracking-widest text-text-secondary uppercase">
+            <div className="flex flex-wrap gap-x-8 gap-y-3 items-center">
+              <Link href="/sarees" className="hover:text-text-primary transition-colors">
+                Archive
               </Link>
-              <Link href="/#fabric-lab" className="hover:text-text-primary transition-colors">
-                Weave Guide
+              <Link href="/about" className="hover:text-text-primary transition-colors">
+                Maison
               </Link>
-              <Link href="/#journal" className="hover:text-text-primary transition-colors">
-                Loom Monograph
+              <Link href="/journal" className="hover:text-text-primary transition-colors">
+                Journal
+              </Link>
+              <Link href="/swatches" className="hover:text-text-primary transition-colors">
+                Swatch Folio
               </Link>
               <button
                 onClick={() => setCareModalOpen(true)}
@@ -157,6 +160,18 @@ export const Footer: React.FC = () => {
               >
                 Care & Preservation
               </button>
+              <Link href="/policies/shipping" className="hover:text-text-primary transition-colors">
+                Insured Shipping
+              </Link>
+              <Link href="/policies/returns" className="hover:text-text-primary transition-colors">
+                7-Day Inspection
+              </Link>
+              <Link href="/policies/privacy" className="hover:text-text-primary transition-colors">
+                Privacy
+              </Link>
+              <Link href="/policies/terms" className="hover:text-text-primary transition-colors">
+                Terms of Sale
+              </Link>
               <a
                 href="https://wa.me/919840123456?text=Hello%20Rami%20Studio%20Concierge,%20I%20would%20like%20to%20consult%20a%20handloom%20stylist."
                 target="_blank"
@@ -167,12 +182,15 @@ export const Footer: React.FC = () => {
               </a>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-text-tertiary text-[10px]">
-              <span>© 2026 RAMI STUDIO LLC</span>
-              <span className="hidden sm:inline">·</span>
-              <span>MINISTRY OF TEXTILES CENTRAL SILK BOARD AFFILIATED</span>
-              <span className="hidden sm:inline">·</span>
-              <span>ALL RIGHTS RESERVED</span>
+            <div className="pt-4 border-t border-surface-border/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-text-tertiary text-[10px]">
+              <div>
+                <span>© 2026 RAMI STUDIO LLC</span>
+                <span className="mx-2">·</span>
+                <span>CENTRAL SILK BOARD REGISTERED: SM/TN/2026/04918</span>
+              </div>
+              <div>
+                <span>HAUTE HANDLOOM MAISON · KANCHIPURAM · ALL RIGHTS RESERVED</span>
+              </div>
             </div>
           </div>
         </div>

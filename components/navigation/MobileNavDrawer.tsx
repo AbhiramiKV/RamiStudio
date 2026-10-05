@@ -86,9 +86,10 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
 
           <nav className="space-y-4">
             {[
-              { label: "Master Heirlooms", href: "/#curated-drop", note: "Single-Batch Pure Silk Drops" },
-              { label: "The Weave Guide", href: "/#fabric-lab", note: "Tactile Metrology & Weights" },
-              { label: "Artisan Monograph", href: "/#journal", note: "Weaver Guilds & Heritage Notes" },
+              { label: "Saree Archive", href: "/sarees", note: "Permanent Loom Collection & Filters" },
+              { label: "Maison Heritage", href: "/about", note: "The Weaver Guild Manifesto" },
+              { label: "Textile Journal", href: "/journal", note: "Monographs & Metrology" },
+              { label: "Tactile Swatches", href: "/swatches", note: "4-Sample Archive Folio ($25)" },
             ].map((item, idx) => (
               <Link
                 key={item.href}

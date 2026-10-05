@@ -27,7 +27,11 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Rami Studio — Modern Luxury Silk Sarees & Textile Architecture",
+  metadataBase: new URL("https://ramistudio.luxury"),
+  title: {
+    default: "Rami Studio — Modern Luxury Silk Sarees & Textile Architecture",
+    template: "%s | Rami Studio",
+  },
   description:
     "Featherweight soft silks, gossamer organza blends, and antique matte zari. Understated modern luxury handloom rooted in quiet Indian heritage.",
   keywords: [
@@ -38,7 +42,23 @@ export const metadata: Metadata = {
     "Banarasi Organza",
     "Matte Zari",
     "Textile Architecture",
+    "Silk Mark Certified",
   ],
+  openGraph: {
+    title: "Rami Studio — Modern Luxury Silk Sarees & Textile Architecture",
+    description:
+      "Handcrafted ceremonial handloom silk sarees woven on traditional pit-looms with real silver electro-lacquered zari.",
+    url: "https://ramistudio.luxury",
+    siteName: "Rami Studio Luxury Atelier",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rami Studio — Haute Handloom Maison",
+    description:
+      "Single-batch pure silk drops from Kanchipuram, Varanasi, Chanderi, and Bhagalpur.",
+  },
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
@@ -59,11 +79,43 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Rami Studio",
+    url: "https://ramistudio.luxury",
+    logo: "https://ramistudio.luxury/icon.svg",
+    description: "Haute handloom maison preserving living textile architecture, pure Mulberry silk, and real silver zari.",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "42 Weavers Colony, Pillayar Palayam",
+      addressLocality: "Kanchipuram",
+      addressRegion: "Tamil Nadu",
+      postalCode: "631501",
+      addressCountry: "IN",
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+91-98401-23456",
+      contactType: "customer service",
+      availableLanguage: ["English", "Tamil", "Hindi"],
+    },
+    sameAs: [
+      "https://instagram.com/ramistudio.luxury",
+    ],
+  };
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-canvas-base text-text-primary font-sans">
         <LenisProvider>
           <MagneticCursor />
