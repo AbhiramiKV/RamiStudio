@@ -180,6 +180,13 @@ export const Footer: React.FC = () => {
               >
                 Stylist Concierge
               </a>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("replay-saree-film"))}
+                className="hover:text-accent-zari transition-colors uppercase cursor-pointer"
+              >
+                Replay Saree Film
+              </button>
             </div>
 
             <div className="pt-4 border-t border-surface-border/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-text-tertiary text-[10px]">

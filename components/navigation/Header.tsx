@@ -114,6 +114,14 @@ export const Header: React.FC = () => {
                 >
                   Swatch Folio
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent("replay-saree-film"))}
+                  className="hover:text-accent-zari transition-colors flex items-center gap-1 cursor-pointer"
+                  title="Experience 3D Saree Film"
+                >
+                  <span>Film</span>
+                </button>
               </nav>
             </div>
 

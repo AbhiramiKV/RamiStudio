@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { usePathname } from "next/navigation";
 import * as THREE from "three";
+import { usePathname } from "next/navigation";
 import { LogoMonogram } from "@/components/branding/LogoMonogram";
 import { LogoWordmark } from "@/components/branding/LogoWordmark";
 
 export const CinematicSareeLanding: React.FC = () => {
   const pathname = usePathname();
+  // Big 3D Saree Resemblance Animation: Active only on first time landing on home page
   const [visible, setVisible] = useState<boolean>(false);
   const [fading, setFading] = useState<boolean>(false);
   const [logoRevealed, setLogoRevealed] = useState<boolean>(false);
@@ -22,46 +23,63 @@ export const CinematicSareeLanding: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Only show automatically on root path, if not seen in session, and motion is allowed
-    const hasSeen = typeof window !== "undefined" ? sessionStorage.getItem("rami_has_seen_splash") : "true";
-    const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (pathname === "/" && !hasSeen && !prefersReducedMotion) {
-      sessionStorage.setItem("rami_has_seen_splash", "true");
-      const startTimer = setTimeout(() => {
-        setVisible(true);
-      }, 0);
-
-      const logoTimer = setTimeout(() => {
-        setLogoRevealed(true);
-      }, 700);
-
-      const fadeTimer = setTimeout(() => {
-        setFading(true);
-      }, 1500);
-
-      const endTimer = setTimeout(() => {
-        setVisible(false);
-      }, 1950);
-
-      return () => {
-        clearTimeout(startTimer);
-        clearTimeout(logoTimer);
-        clearTimeout(fadeTimer);
-        clearTimeout(endTimer);
-      };
+    // Only show automatically on root path "/" on first landing of the session
+    if (pathname !== "/") {
+      return;
     }
+
+    const hasSeen =
+      typeof window !== "undefined" &&
+      sessionStorage.getItem("rami_has_seen_splash");
+
+    if (hasSeen) {
+      return;
+    }
+
+    // Check prefers-reduced-motion: if user explicitly requested reduced motion, bypass
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion) {
+      return;
+    }
+
+    sessionStorage.setItem("rami_has_seen_splash", "true");
+    const startTimer = setTimeout(() => {
+      setVisible(true);
+    }, 0);
+
+    // Sequence the grand saree flight and brand reveal on first landing
+    const logoTimer = setTimeout(() => {
+      setLogoRevealed(true);
+    }, 700);
+
+    const fadeTimer = setTimeout(() => {
+      setFading(true);
+    }, 1600);
+
+    const endTimer = setTimeout(() => {
+      setVisible(false);
+    }, 2050);
+
+    return () => {
+      clearTimeout(startTimer);
+      clearTimeout(logoTimer);
+      clearTimeout(fadeTimer);
+      clearTimeout(endTimer);
+    };
   }, [pathname]);
 
   useEffect(() => {
-    // Support manual replay event from header/footer or drawer
+    // Support manual replay event from header, mobile drawer, or footer
     const handleReplay = () => {
       setFading(false);
       setLogoRevealed(false);
       setVisible(true);
       setTimeout(() => setLogoRevealed(true), 700);
-      setTimeout(() => setFading(true), 1500);
-      setTimeout(() => setVisible(false), 1950);
+      setTimeout(() => setFading(true), 1600);
+      setTimeout(() => setVisible(false), 2050);
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {

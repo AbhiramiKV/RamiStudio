@@ -17,364 +17,544 @@ interface TextileCanvasProps {
   className?: string;
 }
 
-// Anatomically Proportioned Faceless Figure
-// Proportions: standing female model, ~1.77m virtual scale
-// Structure: feet → calves → knees → thighs → hips → waist → ribcage → shoulders → neck stub
+// ─────────────────────────────────────────────────────────────────────────────
+// ANATOMICAL DRAPE COORDINATES (Calibrated to mannequin.glb @ pos(0,-0.94,0) scale=0.98)
+//
+// Landmarks in World Space:
+//   Feet / Plinth Top:   y = -0.940
+//   Floor-Skimming Hem:  y = -0.920
+//   Knees:               y = -0.450
+//   Hips:                y = -0.100 (half-width 0.245, depth 0.125)
+//   Waist / Navel Tuck:  y = +0.080 (torso half-width 0.165, depth 0.210)
+//   Under-Bust:          y = +0.190 (torso half-width 0.165, depth 0.232)
+//   Bust Peak:           y = +0.300 (torso half-width 0.162, front Z max +0.161)
+//   Upper Chest:         y = +0.420 (torso half-width 0.165, front Z max +0.147)
+//   Shoulder Crest:      y = +0.505 (left x = -0.185, right x = +0.185)
+//   Arms:                x = ±0.210, y = 0.220 to 0.480, r ≈ 0.048
+//   Neck & Head:         y = +0.550 to +0.798
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── 1. Sculpted Editorial Faceless Figure (Fallback & Reference) ─────────────
 function createSculptedFacelessFigure(): THREE.Group {
   const group = new THREE.Group();
-
-  const skinMat = new THREE.MeshStandardMaterial({
-    color: 0xf0ece4,
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0xd6d0c4,
     roughness: 0.72,
-    metalness: 0.0,
+    metalness: 0.02,
   });
 
-  const addCylinder = (
-    rTop: number, rBot: number, h: number,
-    segs: number, yBase: number,
-    xOff = 0, zOff = 0, xRot = 0, zRot = 0,
-    mat: THREE.Material = skinMat
+  const addCyl = (
+    rT: number, rB: number, h: number, segs: number,
+    yB: number, xO = 0, zO = 0, xR = 0, zR = 0
   ) => {
-    const geo = new THREE.CylinderGeometry(rTop, rBot, h, segs, 4);
-    geo.computeVertexNormals();
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(xOff, yBase + h / 2, zOff);
-    mesh.rotation.x = xRot;
-    mesh.rotation.z = zRot;
-    group.add(mesh);
-    return mesh;
+    const g = new THREE.CylinderGeometry(rT, rB, h, segs, 4);
+    g.computeVertexNormals();
+    const m = new THREE.Mesh(g, mat);
+    m.position.set(xO, yB + h / 2, zO);
+    m.rotation.x = xR; m.rotation.z = zR;
+    m.castShadow = true; m.receiveShadow = true;
+    group.add(m);
+    return m;
   };
 
-  const addSphere = (r: number, y: number, xOff = 0, zOff = 0, scaleY = 1.0, mat: THREE.Material = skinMat) => {
-    const geo = new THREE.SphereGeometry(r, 24, 20);
-    geo.scale(1, scaleY, 1);
-    geo.computeVertexNormals();
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(xOff, y, zOff);
-    group.add(mesh);
-    return mesh;
+  const addSph = (r: number, y: number, xO = 0, zO = 0, sY = 1.0) => {
+    const g = new THREE.SphereGeometry(r, 24, 20);
+    g.scale(1, sY, 1);
+    g.computeVertexNormals();
+    const m = new THREE.Mesh(g, mat);
+    m.position.set(xO, y, zO);
+    m.castShadow = true; m.receiveShadow = true;
+    group.add(m);
+    return m;
   };
 
-  // ── FEET (small, anchored below ankle) ──
-  addSphere(0.038, -0.92, -0.055, 0.025, 0.45);  // Left foot
-  addSphere(0.038, -0.92,  0.055, 0.025, 0.45);  // Right foot
+  // Feet & Ankles
+  addSph(0.040, -0.92, -0.075, 0.035, 0.45);
+  addSph(0.040, -0.92,  0.075, 0.035, 0.45);
 
-  // ── CALVES ──
-  addCylinder(0.052, 0.046, 0.28, 20, -0.91, -0.055); // Left calf
-  addCylinder(0.052, 0.046, 0.28, 20, -0.91,  0.055); // Right calf
+  // Calves & Knees
+  addCyl(0.062, 0.050, 0.36, 20, -0.90, -0.075, -0.02);
+  addCyl(0.062, 0.050, 0.36, 20, -0.90,  0.075, -0.02);
+  addSph(0.065, -0.52, -0.075, 0.01);
+  addSph(0.065, -0.52,  0.075, 0.01);
 
-  // ── KNEES ──
-  addSphere(0.055, -0.63, -0.055, 0.0, 1.0);  // Left knee
-  addSphere(0.055, -0.63,  0.055, 0.0, 1.0);  // Right knee
+  // Thighs
+  addCyl(0.092, 0.070, 0.38, 24, -0.50, -0.075, 0.02);
+  addCyl(0.092, 0.070, 0.38, 24, -0.50,  0.075, 0.02);
 
-  // ── THIGHS ──
-  addCylinder(0.075, 0.060, 0.30, 24, -0.63, -0.055); // Left thigh
-  addCylinder(0.075, 0.060, 0.30, 24, -0.63,  0.055); // Right thigh
-
-  // ── PELVIS / HIP JUNCTION (where thighs merge) ──
-  // Wide ellipsoid spanning hip width
-  const pelvisGeo = new THREE.SphereGeometry(0.145, 32, 20);
-  pelvisGeo.scale(1.2, 0.72, 0.92);
-  pelvisGeo.computeVertexNormals();
-  const pelvis = new THREE.Mesh(pelvisGeo, skinMat);
-  pelvis.position.set(0, -0.33, 0.006);
+  // Pelvis / Hips
+  const pelGeo = new THREE.SphereGeometry(0.18, 32, 20);
+  pelGeo.scale(1.36, 0.80, 0.65);
+  pelGeo.computeVertexNormals();
+  const pelvis = new THREE.Mesh(pelGeo, mat);
+  pelvis.position.set(0, -0.06, 0.035);
+  pelvis.castShadow = true; pelvis.receiveShadow = true;
   group.add(pelvis);
 
-  // ── WAIST — narrow, smooth taper ──
-  const waistGeo = new THREE.CylinderGeometry(0.110, 0.148, 0.18, 36, 6);
-  // Sculpt waist taper inward
-  const wPos = waistGeo.attributes.position;
-  for (let i = 0; i < wPos.count; i++) {
-    const y = wPos.getY(i); // -0.09 to +0.09
-    const t = (y + 0.09) / 0.18; // 0 = bottom, 1 = top
-    const squeeze = 1.0 - Math.sin(t * Math.PI) * 0.08;
-    wPos.setX(i, wPos.getX(i) * squeeze);
-    wPos.setZ(i, wPos.getZ(i) * squeeze);
-  }
-  waistGeo.computeVertexNormals();
-  const waist = new THREE.Mesh(waistGeo, skinMat);
-  waist.position.set(0, -0.14, 0.002);
+  // Central Waist & Ribcage
+  const wstGeo = new THREE.CylinderGeometry(0.165, 0.170, 0.18, 36, 6);
+  wstGeo.computeVertexNormals();
+  const waist = new THREE.Mesh(wstGeo, mat);
+  waist.scale.set(1.0, 1.0, 0.72);
+  waist.position.set(0, 0.14, 0.035);
+  waist.castShadow = true; waist.receiveShadow = true;
   group.add(waist);
 
-  // ── RIBCAGE — flares naturally upward from waist ──
-  const ribGeo = new THREE.CylinderGeometry(0.152, 0.118, 0.26, 36, 6);
-  const rPos = ribGeo.attributes.position;
-  for (let i = 0; i < rPos.count; i++) {
-    const y = rPos.getY(i); // -0.13 to +0.13
-    const t = (y + 0.13) / 0.26;
-    // Slight front-projection at mid-ribcage for bust depth
-    const bustFactor = Math.sin(t * Math.PI) * 0.022;
-    rPos.setZ(i, rPos.getZ(i) + (rPos.getZ(i) > 0 ? bustFactor : 0));
-  }
-  ribGeo.computeVertexNormals();
-  const ribcage = new THREE.Mesh(ribGeo, skinMat);
-  ribcage.position.set(0, 0.085, 0.01);
-  group.add(ribcage);
+  // Upper Torso & Bust
+  const chGeo = new THREE.CylinderGeometry(0.165, 0.165, 0.22, 36, 6);
+  chGeo.computeVertexNormals();
+  const chest = new THREE.Mesh(chGeo, mat);
+  chest.scale.set(1.0, 1.0, 0.78);
+  chest.position.set(0, 0.34, 0.025);
+  chest.castShadow = true; chest.receiveShadow = true;
+  group.add(chest);
 
-  // ── BUST PROJECTION (soft, anatomically subtle) ──
-  addSphere(0.068, 0.195, -0.055, 0.09, 0.85);  // Left bust
-  addSphere(0.068, 0.195,  0.055, 0.09, 0.85);  // Right bust
+  addSph(0.070, 0.30, -0.070, 0.115, 0.90);
+  addSph(0.070, 0.30,  0.070, 0.115, 0.90);
 
-  // ── SHOULDERS ── (clavicle width ~0.38m)
-  addSphere(0.065, 0.30, -0.165, 0.0, 0.82); // Left shoulder ball
-  addSphere(0.065, 0.30,  0.165, 0.0, 0.82); // Right shoulder ball
+  // Shoulders & Arms
+  addSph(0.062, 0.505, -0.185, 0.005, 0.85);
+  addSph(0.062, 0.505,  0.185, 0.005, 0.85);
+  addCyl(0.046, 0.038, 0.26, 16, 0.22, -0.210, -0.015, 0, 0.06);
+  addCyl(0.046, 0.038, 0.26, 16, 0.22,  0.210, -0.015, 0, -0.06);
 
-  // ── UPPER ARMS (hanging naturally, slight inward angle) ──
-  addCylinder(0.042, 0.036, 0.20, 16, 0.21, -0.195, 0.0, 0.0, 0.12);  // Left upper arm
-  addCylinder(0.042, 0.036, 0.20, 16, 0.21,  0.195, 0.0, 0.0, -0.12); // Right upper arm
-
-  // ── NECK STUMP (no head — faceless editorial aesthetic) ──
-  addCylinder(0.052, 0.062, 0.10, 20, 0.37, 0, -0.005);
+  // Neck & Editorial Head Finial
+  addCyl(0.052, 0.062, 0.15, 24, 0.53, 0, 0.035);
+  addSph(0.052, 0.74, 0, 0.035, 0.85);
 
   return group;
 }
 
-
-// Sculpted Tailored Silk Blouse with boat neckline and tailored sleeves
-function createTailoredBlouseMesh(material: THREE.Material): THREE.Group {
+// ── 2. Tailored Silk Blouse (Choli) with Zari Piping & Fitted Sleeves ─────────
+function createTailoredBlouseMesh(
+  blouseMaterial: THREE.Material,
+  zariMaterial: THREE.Material
+): THREE.Group {
   const group = new THREE.Group();
-
-  // Fitted Bodice: spans from ribcage bottom (y=-0.05) up to clavicle (y=0.215)
-  // Height = 0.265, centered at y = 0.0825
-  const radialSegs = 52;
-  const heightSegs = 20;
-  // rTop matches shoulder width, rBot matches waist flare at blouse hem
-  const bodiceGeo = new THREE.CylinderGeometry(0.158, 0.145, 0.265, radialSegs, heightSegs, true);
-  const pos = bodiceGeo.attributes.position;
-
-  for (let i = 0; i < pos.count; i++) {
-    const y = pos.getY(i); // -0.1325 to +0.1325 (local coords)
-    const x = pos.getX(i);
-    const z = pos.getZ(i);
-
-    // Bust projection at mid-bodice (local y = 0 to 0.06)
-    if (z > 0 && y > -0.04 && y < 0.08) {
-      const bustFactor = Math.sin(((y + 0.04) / 0.12) * Math.PI);
-      pos.setZ(i, z + bustFactor * 0.026);
-    }
-
-    // Waist pinch at lower bodice (local y = -0.08 to -0.13)
-    if (y < -0.06) {
-      const pinch = (-y - 0.06) / 0.07;
-      pos.setX(i, x * (1.0 - pinch * 0.06));
-      pos.setZ(i, pos.getZ(i) * (1.0 - pinch * 0.05));
-    }
-
-    // Boat neckline dip at top front center
-    if (y > 0.08 && z > 0) {
-      const neckDip = (1.0 - Math.min(Math.abs(x) / 0.13, 1.0)) * 0.042;
-      pos.setY(i, y - neckDip);
-    }
-  }
-  bodiceGeo.computeVertexNormals();
-  // Center the bodice at y = 0.0825 so it spans -0.05 to 0.215
-  bodiceGeo.translate(0, 0.0825, 0.012);
-
-  const bodice = new THREE.Mesh(bodiceGeo, material);
-  group.add(bodice);
-
-  // Short sleeves — positioned at shoulder ball centers (y=0.30, x=±0.165)
-  const sleeveGeoL = new THREE.CylinderGeometry(0.055, 0.048, 0.13, 24);
-  sleeveGeoL.rotateZ(Math.PI * 0.16);
-  sleeveGeoL.translate(-0.205, 0.298, 0.005);
-  sleeveGeoL.computeVertexNormals();
-  const sleeveL = new THREE.Mesh(sleeveGeoL, material);
-  group.add(sleeveL);
-
-  const sleeveGeoR = new THREE.CylinderGeometry(0.055, 0.048, 0.13, 24);
-  sleeveGeoR.rotateZ(-Math.PI * 0.16);
-  sleeveGeoR.translate(0.205, 0.298, 0.005);
-  sleeveGeoR.computeVertexNormals();
-  const sleeveR = new THREE.Mesh(sleeveGeoR, material);
-  group.add(sleeveR);
-
-  return group;
-}
-
-
-// Multi-Pleated Diagonal Pallu Drape Sash layered OVER the blouse
-function createDiagonalSashGeometry(style: DrapeStyle = "nivi"): THREE.BufferGeometry {
-  const lengthSegments = 60;
-  const widthSegments = 18;
-  const geo = new THREE.BufferGeometry();
-  const positions: number[] = [];
+  const rSegs = 64;
+  const hSegs = 24;
+  const pos: number[] = [];
   const uvs: number[] = [];
-  const indices: number[] = [];
+  const idx: number[] = [];
 
-  // Y range: waist tuck (y=-0.04) → shoulder peak (y=0.315)
-  const yBottom = -0.04;
-  const yTop = 0.315;
-  const yRange = yTop - yBottom;
+  // Bodice wraps cropped choli from under-bust (y = 0.23) to shoulder root (y = 0.495)
+  for (let h = 0; h <= hSegs; h++) {
+    const v = h / hSegs;
+    const y = 0.23 + v * 0.265; // y = 0.23 to 0.495
 
-  for (let i = 0; i <= lengthSegments; i++) {
-    const v = i / lengthSegments;
+    const rX = THREE.MathUtils.lerp(0.170, 0.178, v);
+    const cZ = 0.028 - v * 0.015;
 
-    let y: number;
-    let centerAngle: number;
-    let dAngle: number;
+    // Asymmetric depth: fitted back, flattering bust contour
+    const rZ_front = 0.134 + Math.sin(v * Math.PI * 0.70) * 0.016;
+    const rZ_back  = 0.112 + Math.sin(v * Math.PI) * 0.015;
 
-    if (style === "seedha") {
-      y = THREE.MathUtils.lerp(yBottom, yTop, v);
-      centerAngle = THREE.MathUtils.lerp(2.70, 0.42, v);
-      dAngle = THREE.MathUtils.lerp(0.50, 0.36, v);
-    } else if (style === "cape") {
-      y = THREE.MathUtils.lerp(0.20, yTop, v);
-      centerAngle = Math.PI * 0.5;
-      dAngle = THREE.MathUtils.lerp(1.10, 0.50, v);
-    } else {
-      // Classic Nivi: from waist right, sweeping across bust to left shoulder
-      y = THREE.MathUtils.lerp(yBottom, yTop, v);
-      centerAngle = THREE.MathUtils.lerp(0.40, 2.70, v);
-      dAngle = THREE.MathUtils.lerp(0.50, 0.36, v);
-    }
-
-    const vy = (y - yBottom) / yRange;
-
-    // Blouse outer radius: rBot matches blouse hem (~0.152), rTop matches shoulder (~0.168)
-    let rx = THREE.MathUtils.lerp(0.162, 0.172, vy);
-    let rz = THREE.MathUtils.lerp(0.150, 0.168, vy);
-
-    // Bust projection over the blouse (y = 0.04 to y = 0.20)
-    if (y > 0.04 && y < 0.20) {
-      const bustProg = Math.sin(((y - 0.04) / 0.16) * Math.PI);
-      rz += bustProg * 0.042;
-      rx += bustProg * 0.010;
-    }
-
-    for (let j = 0; j <= widthSegments; j++) {
-      const u = j / widthSegments;
-      const angle = centerAngle + (u - 0.5) * dAngle;
-
-      const cosA = Math.cos(angle);
-      const sinA = Math.sin(angle);
-
-      // 3 distinct architectural pleats with folded crests
-      const pleat = Math.sin(u * Math.PI * 6.0) * 0.008;
-      const r = 1.0 + 0.016 + pleat;
-
-      const px = cosA * rx * r;
-      const pz = Math.max(sinA * rz * r, -0.04);
-      const py = y + (u - 0.5) * 0.022;
-
-      positions.push(px, py, pz);
-      uvs.push(u, v);
-    }
-  }
-
-  for (let i = 0; i < lengthSegments; i++) {
-    for (let j = 0; j < widthSegments; j++) {
-      const a = i * (widthSegments + 1) + j;
-      const b = a + 1;
-      const c = (i + 1) * (widthSegments + 1) + j;
-      const d = c + 1;
-
-      indices.push(a, c, b);
-      indices.push(b, c, d);
-    }
-  }
-
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-  geo.setIndex(indices);
-  geo.computeVertexNormals();
-
-  return geo;
-}
-
-
-// Procedural Nivi Pleated Saree Skirt tailored to human model anatomy with hip wrap tension
-function createPleatedSkirtGeometry(pleatCount = 7): THREE.BufferGeometry {
-  // Skirt spans from waistband (y = -0.055) down to floor (y = -0.92)
-  const skirtTop = -0.055;
-  const skirtBottom = -0.92;
-  const height = skirtTop - skirtBottom; // 0.865
-  const radialSegments = 92;
-  const heightSegments = 36;
-
-  const geo = new THREE.BufferGeometry();
-  const positions: number[] = [];
-  const uvs: number[] = [];
-  const indices: number[] = [];
-
-  for (let y = 0; y <= heightSegments; y++) {
-    const v = y / heightSegments;
-    const py = skirtTop - v * height;
-
-    let currentRadius: number;
-    if (v < 0.20) {
-      // Hip wrap: waistband tight, flaring to hip width
-      currentRadius = THREE.MathUtils.lerp(0.165, 0.242, v / 0.20);
-    } else {
-      // Skirt body: gradual A-line flare to floor sweep
-      currentRadius = THREE.MathUtils.lerp(0.242, 0.335, (v - 0.20) / 0.80);
-    }
-
-    // Subtle diagonal hip wrap tension lines across upper skirt (v < 0.25)
-    let hipTension = 0;
-    if (v < 0.25) {
-      hipTension = Math.sin(v * Math.PI * 8.0) * 0.003 * (1.0 - v / 0.25);
-    }
-
-    for (let x = 0; x <= radialSegments; x++) {
-      const u = x / radialSegments;
+    for (let r = 0; r <= rSegs; r++) {
+      const u = r / rSegs;
       const angle = u * Math.PI * 2;
+      const sinA = Math.sin(angle);
+      const rZ = sinA >= 0 ? rZ_front : rZ_back;
 
-      // Front knife-pleat cluster centered at +Z (angle = Math.PI / 2)
-      const frontDist = Math.abs(angle - Math.PI / 2);
-      let pleatOffset = 0;
-      if (frontDist < 0.52) {
-        const pleatPhase = (angle - (Math.PI / 2 - 0.52)) / 1.04;
-        const rawWave = Math.sin(pleatPhase * Math.PI * pleatCount);
-        // Sharpened knife pleat with asymmetric fold face
-        const wave = Math.sign(rawWave) * Math.pow(Math.abs(rawWave), 0.72);
-        pleatOffset = wave * (0.014 + v * 0.038);
+      const px = Math.cos(angle) * rX;
+      const pz = cZ + sinA * rZ;
+      let py = y;
+
+      // Elegant sweetheart / scoop neckline dipping to y = 0.405 in front
+      if (sinA > 0.35 && v > 0.65) {
+        const neckProg = (v - 0.65) / 0.35;
+        const frontCenter = (sinA - 0.35) / 0.65;
+        py -= neckProg * frontCenter * 0.045;
       }
 
-      const r = currentRadius + pleatOffset + hipTension;
-      const px = Math.cos(angle) * r;
-      const pz = Math.sin(angle) * r;
-
-      positions.push(px, py, pz);
+      pos.push(px, py, pz);
       uvs.push(u, v);
     }
   }
 
-
-  for (let y = 0; y < heightSegments; y++) {
-    for (let x = 0; x < radialSegments; x++) {
-      const i1 = y * (radialSegments + 1) + x;
-      const i2 = i1 + 1;
-      const i3 = (y + 1) * (radialSegments + 1) + x;
-      const i4 = i3 + 1;
-
-      indices.push(i1, i3, i2);
-      indices.push(i2, i3, i4);
+  for (let h = 0; h < hSegs; h++) {
+    for (let r = 0; r < rSegs; r++) {
+      const a = h * (rSegs + 1) + r;
+      const b = a + 1;
+      const c = (h + 1) * (rSegs + 1) + r;
+      const d = c + 1;
+      idx.push(a, b, c, b, d, c);
     }
   }
 
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-  geo.setIndex(indices);
-  geo.computeVertexNormals();
+  const bodiceGeo = new THREE.BufferGeometry();
+  bodiceGeo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  bodiceGeo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  bodiceGeo.setIndex(idx);
+  bodiceGeo.computeVertexNormals();
+  const bodiceMesh = new THREE.Mesh(bodiceGeo, blouseMaterial);
+  bodiceMesh.castShadow = true; bodiceMesh.receiveShadow = true;
+  group.add(bodiceMesh);
 
-  return geo;
+  // Left Fitted Cap Sleeve & Zari Cuff (Hugs upper arm naturally)
+  const slvGeoL = new THREE.CylinderGeometry(0.050, 0.045, 0.08, 24);
+  slvGeoL.rotateZ(0.06);
+  slvGeoL.translate(-0.198, 0.450, -0.005);
+  slvGeoL.computeVertexNormals();
+  const slvL = new THREE.Mesh(slvGeoL, blouseMaterial);
+  slvL.castShadow = true;
+  group.add(slvL);
+
+  const cuffGeoL = new THREE.CylinderGeometry(0.046, 0.045, 0.014, 24);
+  cuffGeoL.rotateZ(0.06);
+  cuffGeoL.translate(-0.200, 0.405, -0.005);
+  cuffGeoL.computeVertexNormals();
+  const cuffL = new THREE.Mesh(cuffGeoL, zariMaterial);
+  group.add(cuffL);
+
+  // Right Fitted Cap Sleeve & Zari Cuff
+  const slvGeoR = new THREE.CylinderGeometry(0.050, 0.045, 0.08, 24);
+  slvGeoR.rotateZ(-0.06);
+  slvGeoR.translate(0.198, 0.450, -0.005);
+  slvGeoR.computeVertexNormals();
+  const slvR = new THREE.Mesh(slvGeoR, blouseMaterial);
+  slvR.castShadow = true;
+  group.add(slvR);
+
+  const cuffGeoR = new THREE.CylinderGeometry(0.046, 0.045, 0.014, 24);
+  cuffGeoR.rotateZ(-0.06);
+  cuffGeoR.translate(0.200, 0.405, -0.005);
+  cuffGeoR.computeVertexNormals();
+  const cuffR = new THREE.Mesh(cuffGeoR, zariMaterial);
+  group.add(cuffR);
+
+  return group;
 }
 
-// Tailored Saree Waistband Cinch (Tuck Band)
+// ── 3. Waistband Cinch / Tuck Knot at Natural Waist ──────────────────────────
 function createWaistbandGeometry(): THREE.BufferGeometry {
-  // Waist sits at y ≈ -0.05 on the new anatomical figure (bottom of blouse hem)
-  const geo = new THREE.CylinderGeometry(0.152, 0.150, 0.030, 48, 1, true);
-  geo.translate(0, -0.055, 0.008);
+  const geo = new THREE.CylinderGeometry(0.178, 0.182, 0.030, 48, 1, true);
+  geo.scale(1.0, 1.0, 0.70);
+  geo.translate(0, 0.080, 0.038);
   geo.computeVertexNormals();
   return geo;
 }
 
+// ── 4. Authentic Saree Skirt with Cascading Knife Pleats (Patli) ──────────────
+function createAuthenticSareeSkirt(
+  pleatCount: number,
+  silkMaterial: THREE.Material,
+  zariMaterial: THREE.Material
+): THREE.Group {
+  const group = new THREE.Group();
+
+  const skirtTop = 0.080;   // Waist tuck
+  const skirtBottom = -0.920; // Floor hem
+  const height = skirtTop - skirtBottom; // 1.00m
+
+  // Part A: Petticoat & Contoured Base Wrap (Flared A-line silhouette)
+  const rSegs = 96;
+  const hSegs = 36;
+  const pos: number[] = [];
+  const uvs: number[] = [];
+  const idx: number[] = [];
+
+  for (let y = 0; y <= hSegs; y++) {
+    const v = y / hSegs;
+    const py = skirtTop - v * height;
+
+    let rX: number, rZ: number, cZ: number;
+    if (v < 0.20) {
+      const t = v / 0.20;
+      rX = THREE.MathUtils.lerp(0.176, 0.250, t);
+      rZ = THREE.MathUtils.lerp(0.122, 0.128, t);
+      cZ = THREE.MathUtils.lerp(0.038, 0.035, t);
+    } else if (v < 0.60) {
+      const t = (v - 0.20) / 0.40;
+      rX = THREE.MathUtils.lerp(0.250, 0.208, t);
+      rZ = THREE.MathUtils.lerp(0.128, 0.104, t);
+      cZ = THREE.MathUtils.lerp(0.035, 0.015, t);
+    } else {
+      const t = (v - 0.60) / 0.40;
+      rX = THREE.MathUtils.lerp(0.208, 0.286, t);
+      rZ = THREE.MathUtils.lerp(0.104, 0.150, t);
+      cZ = THREE.MathUtils.lerp(0.015, 0.000, t);
+    }
+
+    const hipTension = v < 0.22 ? Math.sin(v * Math.PI * 5.0) * 0.0018 * (1.0 - v / 0.22) : 0;
+
+    for (let x = 0; x <= rSegs; x++) {
+      const u = x / rSegs;
+      const angle = u * Math.PI * 2;
+      pos.push(Math.cos(angle) * (rX + hipTension), py, cZ + Math.sin(angle) * (rZ + hipTension));
+      uvs.push(u, v);
+    }
+  }
+
+  for (let y = 0; y < hSegs; y++) {
+    for (let x = 0; x < rSegs; x++) {
+      const i1 = y * (rSegs + 1) + x;
+      const i2 = i1 + 1;
+      const i3 = (y + 1) * (rSegs + 1) + x;
+      const i4 = i3 + 1;
+      idx.push(i1, i3, i2, i2, i3, i4);
+    }
+  }
+
+  const baseGeo = new THREE.BufferGeometry();
+  baseGeo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  baseGeo.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  baseGeo.setIndex(idx);
+  baseGeo.computeVertexNormals();
+  const baseMesh = new THREE.Mesh(baseGeo, silkMaterial);
+  baseMesh.castShadow = true; baseMesh.receiveShadow = true;
+  group.add(baseMesh);
+
+  // Part B: Distinct Overlapping Knife Pleats (Patli)
+  // Each pleat is a separate folded ribbon overlapping right-to-left
+  const pleatHeightSegs = 28;
+  const pleatWidthSegs = 4;
+  const pleatSpanX = 0.016; // 1.6cm lateral step per pleat
+
+  for (let p = 0; p < pleatCount; p++) {
+    const pPos: number[] = [];
+    const pUvs: number[] = [];
+    const pIdx: number[] = [];
+
+    // Right-to-left overlap ordering
+    const pleatOffsetU = (p - (pleatCount - 1) / 2);
+    const startX = pleatOffsetU * pleatSpanX;
+    const baseZ = 0.148 + p * 0.0035; // Staggered forward in Z for zero z-fighting
+
+    for (let h = 0; h <= pleatHeightSegs; h++) {
+      const v = h / pleatHeightSegs;
+      const py = skirtTop - v * height;
+
+      // Pleat ribbon curves outward slightly toward the hem
+      const flare = THREE.MathUtils.lerp(0.045, 0.075, v);
+      const curX = startX * (1.0 + v * 0.65);
+      const curZ = baseZ + Math.sin(v * Math.PI * 0.8) * 0.015;
+
+      for (let w = 0; w <= pleatWidthSegs; w++) {
+        const u = w / pleatWidthSegs;
+        // Crisp knife-pleat fold with tactile shadow crevice
+        const crease = Math.pow(u, 1.3);
+        const px = curX + (u - 0.5) * flare;
+        const pz = curZ + crease * 0.022;
+
+        pPos.push(px, py, pz);
+        pUvs.push(u, v);
+      }
+    }
+
+    for (let h = 0; h < pleatHeightSegs; h++) {
+      for (let w = 0; w < pleatWidthSegs; w++) {
+        const a = h * (pleatWidthSegs + 1) + w;
+        const b = a + 1;
+        const c = (h + 1) * (pleatWidthSegs + 1) + w;
+        const d = c + 1;
+        pIdx.push(a, b, c, b, d, c);
+      }
+    }
+
+    const pleatGeo = new THREE.BufferGeometry();
+    pleatGeo.setAttribute("position", new THREE.Float32BufferAttribute(pPos, 3));
+    pleatGeo.setAttribute("uv", new THREE.Float32BufferAttribute(pUvs, 2));
+    pleatGeo.setIndex(pIdx);
+    pleatGeo.computeVertexNormals();
+
+    const pleatMesh = new THREE.Mesh(pleatGeo, silkMaterial);
+    pleatMesh.castShadow = true; pleatMesh.receiveShadow = true;
+    group.add(pleatMesh);
+  }
+
+  // Part C: Solid 8.5cm Woven Zari Hem Border Band
+  const hemSegsR = 96;
+  const hemSegsH = 4;
+  const hPos: number[] = [];
+  const hUvs: number[] = [];
+  const hIdx: number[] = [];
+
+  for (let y = 0; y <= hemSegsH; y++) {
+    const v = y / hemSegsH;
+    const py = -0.920 + v * 0.085; // y = -0.920 to -0.835
+    const rX = THREE.MathUtils.lerp(0.288, 0.272, v);
+    const rZ = THREE.MathUtils.lerp(0.152, 0.142, v);
+
+    for (let x = 0; x <= hemSegsR; x++) {
+      const u = x / hemSegsR;
+      const angle = u * Math.PI * 2;
+      hPos.push(Math.cos(angle) * rX, py, Math.sin(angle) * rZ);
+      hUvs.push(u, v);
+    }
+  }
+
+  for (let y = 0; y < hemSegsH; y++) {
+    for (let x = 0; x < hemSegsR; x++) {
+      const i1 = y * (hemSegsR + 1) + x;
+      const i2 = i1 + 1;
+      const i3 = (y + 1) * (hemSegsR + 1) + x;
+      const i4 = i3 + 1;
+      hIdx.push(i1, i3, i2, i2, i3, i4);
+    }
+  }
+
+  const hemGeo = new THREE.BufferGeometry();
+  hemGeo.setAttribute("position", new THREE.Float32BufferAttribute(hPos, 3));
+  hemGeo.setAttribute("uv", new THREE.Float32BufferAttribute(hUvs, 2));
+  hemGeo.setIndex(hIdx);
+  hemGeo.computeVertexNormals();
+  const hemMesh = new THREE.Mesh(hemGeo, zariMaterial);
+  hemMesh.castShadow = true; hemMesh.receiveShadow = true;
+  group.add(hemMesh);
+
+  return group;
+}
+
+// ── 5. Authentic Torso Drape (Midriff Wrap + Multi-Pleated Uparli) ────────────
+function createAuthenticTorsoDrape(
+  style: DrapeStyle = "nivi",
+  silkMaterial: THREE.Material,
+  zariMaterial: THREE.Material
+): THREE.Group {
+  const group = new THREE.Group();
+
+  // Continuous Cross-Chest Pleated Uparli
+  // In Nivi style: Sweeps diagonally from right waist, across the bust, onto the left shoulder
+  // Right side of chest and bare midriff are naturally exposed
+  const lSegs = 64;
+  const wSegs = 24;
+  const uPos: number[] = [];
+  const uUvs: number[] = [];
+  const uIdx: number[] = [];
+
+  const yBottom = 0.08;
+  const yTop = 0.505;
+  const yRange = yTop - yBottom;
+
+  for (let i = 0; i <= lSegs; i++) {
+    const v = i / lSegs;
+    const y = yBottom + v * yRange;
+
+    let centerX: number, centerZ: number, dWidth: number;
+
+    if (style === "seedha") {
+      // Royal Seedha: Emerges tucked at left waist, sweeps across chest to right shoulder
+      centerX = THREE.MathUtils.lerp(-0.12, 0.175, v);
+      const bustProg = Math.sin(v * Math.PI);
+      centerZ = THREE.MathUtils.lerp(0.09, 0.015, v) + bustProg * 0.065;
+      dWidth = 0.16 + bustProg * 0.08;
+    } else if (style === "cape") {
+      // Atelier Cape: Symmetrical cowl drape across front chest
+      centerX = 0;
+      centerZ = THREE.MathUtils.lerp(0.06, 0.18, Math.sin(v * Math.PI));
+      dWidth = THREE.MathUtils.lerp(0.34, 0.22, v);
+    } else {
+      // Classic Nivi: Emerges at right waist (x = +0.12), sweeps across bosom to left shoulder (x = -0.175)
+      centerX = THREE.MathUtils.lerp(0.12, -0.175, v);
+      const bustProg = Math.sin(v * Math.PI);
+      centerZ = THREE.MathUtils.lerp(0.09, 0.020, v) + bustProg * 0.070;
+      dWidth = 0.16 + bustProg * 0.08;
+    }
+
+    for (let j = 0; j <= wSegs; j++) {
+      const u = j / wSegs;
+      const offW = (u - 0.5) * dWidth;
+
+      // Authentic pressed silk pleat waves across the drape width
+      const pleatWave = Math.sin(u * Math.PI * 6.0) * 0.0035;
+
+      const px = centerX + offW * 0.92 - 0.15 * pleatWave;
+      const py = y + offW * 0.10;
+      // +6mm forward relief ensures uparli sits proud of the choli
+      const pz = centerZ + 0.006 + offW * 0.30 + 1.2 * pleatWave;
+
+      uPos.push(px, py, pz);
+      uUvs.push(u, v);
+    }
+  }
+
+  for (let i = 0; i < lSegs; i++) {
+    for (let j = 0; j < wSegs; j++) {
+      const a = i * (wSegs + 1) + j;
+      const b = a + 1;
+      const c = (i + 1) * (wSegs + 1) + j;
+      const d = c + 1;
+      uIdx.push(a, c, b, b, c, d);
+    }
+  }
+
+  const uparliGeo = new THREE.BufferGeometry();
+  uparliGeo.setAttribute("position", new THREE.Float32BufferAttribute(uPos, 3));
+  uparliGeo.setAttribute("uv", new THREE.Float32BufferAttribute(uUvs, 2));
+  uparliGeo.setIndex(uIdx);
+  uparliGeo.computeVertexNormals();
+
+  const uparliMesh = new THREE.Mesh(uparliGeo, silkMaterial);
+  uparliMesh.castShadow = true; uparliMesh.receiveShadow = true;
+  group.add(uparliMesh);
+
+  // Outer Zari Selvedge Piping along the exterior edge of the uparli
+  const selvedgeSegsL = 64;
+  const sPos: number[] = [];
+  const sIdx: number[] = [];
+
+  for (let i = 0; i <= selvedgeSegsL; i++) {
+    const v = i / selvedgeSegsL;
+    const y = yBottom + v * yRange;
+    const bustProg = Math.sin(v * Math.PI);
+
+    let centerX: number, centerZ: number, dWidth: number;
+    if (style === "seedha") {
+      centerX = THREE.MathUtils.lerp(-0.12, 0.175, v);
+      centerZ = THREE.MathUtils.lerp(0.09, 0.015, v) + bustProg * 0.065;
+      dWidth = 0.16 + bustProg * 0.08;
+    } else if (style === "cape") {
+      centerX = 0;
+      centerZ = THREE.MathUtils.lerp(0.06, 0.18, Math.sin(v * Math.PI));
+      dWidth = THREE.MathUtils.lerp(0.34, 0.22, v);
+    } else {
+      centerX = THREE.MathUtils.lerp(0.12, -0.175, v);
+      centerZ = THREE.MathUtils.lerp(0.09, 0.020, v) + bustProg * 0.070;
+      dWidth = 0.16 + bustProg * 0.08;
+    }
+
+    // Outer edge: u = 1.0 (offW = +0.5 * dWidth)
+    const edgeX = centerX + 0.5 * dWidth * 0.92;
+    const edgeY = y + 0.5 * dWidth * 0.10;
+    const edgeZ = centerZ + 0.5 * dWidth * 0.30 + 0.001;
+
+    // Small ribbon band of width 0.014m (1.4cm Zari piping)
+    sPos.push(edgeX - 0.007, edgeY, edgeZ);
+    sPos.push(edgeX + 0.007, edgeY, edgeZ + 0.002);
+  }
+
+  for (let i = 0; i < selvedgeSegsL; i++) {
+    const a = i * 2;
+    const b = a + 1;
+    const c = (i + 1) * 2;
+    const d = c + 1;
+    sIdx.push(a, c, b, b, c, d);
+  }
+
+  const selvedgeGeo = new THREE.BufferGeometry();
+  selvedgeGeo.setAttribute("position", new THREE.Float32BufferAttribute(sPos, 3));
+  selvedgeGeo.setIndex(sIdx);
+  selvedgeGeo.computeVertexNormals();
+
+  const selvedgeMesh = new THREE.Mesh(selvedgeGeo, zariMaterial);
+  group.add(selvedgeMesh);
+
+  // Left Shoulder Gold Brooch / Safety Pin (Anchors the pleated drape to the choli)
+  if (style === "nivi") {
+    const pin = new THREE.Mesh(new THREE.TorusGeometry(0.012, 0.003, 16, 24), zariMaterial);
+    pin.position.set(-0.175, 0.505, 0.030);
+    pin.rotation.x = Math.PI * 0.5;
+    group.add(pin);
+  }
+
+  return group;
+}
 
 function isWebGLAvailable(): boolean {
   if (typeof window === "undefined") return true;
   try {
-    const testCanvas = document.createElement("canvas");
-    return !!(testCanvas.getContext("webgl2") || testCanvas.getContext("webgl"));
+    const c = document.createElement("canvas");
+    return !!(c.getContext("webgl2") || c.getContext("webgl"));
   } catch {
     return false;
   }
@@ -396,16 +576,13 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
   const [isGrabbing, setIsGrabbing] = useState<boolean>(false);
   const [isOrbiting, setIsOrbiting] = useState<boolean>(false);
 
-  const {
-    lightingMode,
-    fabricWeight,
-    zoomLevel,
-    isMacroInspecting,
-  } = useCanvasStore();
+  const { lightingMode, fabricWeight, zoomLevel, isMacroInspecting } = useCanvasStore();
 
   const engineRef = useRef<SareeDrapeEngine | null>(null);
-  const skirtMeshRef = useRef<THREE.Mesh | null>(null);
-  const sashMeshRef = useRef<THREE.Mesh | null>(null);
+  const skirtGroupRef = useRef<THREE.Group | null>(null);
+  const torsoDrapeGroupRef = useRef<THREE.Group | null>(null);
+  const silkMaterialRef = useRef<THREE.Material | null>(null);
+  const zariMaterialRef = useRef<THREE.Material | null>(null);
 
   const uniformsRef = useRef<{
     uTime: { value: number };
@@ -461,19 +638,33 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     if (engineRef.current) {
       engineRef.current.setDrapeStyle(style);
     }
-    if (sashMeshRef.current) {
-      const oldGeo = sashMeshRef.current.geometry;
-      sashMeshRef.current.geometry = createDiagonalSashGeometry(style);
-      oldGeo.dispose();
+    if (torsoDrapeGroupRef.current && silkMaterialRef.current && zariMaterialRef.current) {
+      const parent = torsoDrapeGroupRef.current.parent;
+      if (parent) {
+        parent.remove(torsoDrapeGroupRef.current);
+        torsoDrapeGroupRef.current.traverse((c) => {
+          if ((c as THREE.Mesh).geometry) (c as THREE.Mesh).geometry.dispose();
+        });
+        const newGroup = createAuthenticTorsoDrape(style, silkMaterialRef.current, zariMaterialRef.current);
+        parent.add(newGroup);
+        torsoDrapeGroupRef.current = newGroup;
+      }
     }
   };
 
   const handlePleatCountChange = (count: number) => {
     setPleatCount(count);
-    if (skirtMeshRef.current) {
-      const oldGeo = skirtMeshRef.current.geometry;
-      skirtMeshRef.current.geometry = createPleatedSkirtGeometry(count);
-      oldGeo.dispose();
+    if (skirtGroupRef.current && silkMaterialRef.current && zariMaterialRef.current) {
+      const parent = skirtGroupRef.current.parent;
+      if (parent) {
+        parent.remove(skirtGroupRef.current);
+        skirtGroupRef.current.traverse((c) => {
+          if ((c as THREE.Mesh).geometry) (c as THREE.Mesh).geometry.dispose();
+        });
+        const newSkirt = createAuthenticSareeSkirt(count, silkMaterialRef.current, zariMaterialRef.current);
+        parent.add(newSkirt);
+        skirtGroupRef.current = newSkirt;
+      }
     }
     if (engineRef.current) {
       engineRef.current.setPleatCount(count);
@@ -486,11 +677,14 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     if (!container || !mount) return;
 
     const width = container.clientWidth || 600;
-    const height = container.clientHeight || 700;
+    const height = container.clientHeight || 800;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, width / height, 0.1, 100);
-    camera.position.set(0, -0.02, 3.5);
+
+    // Camera: Calibrated to frame 1.74m standing figure on plinth with headroom
+    const camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 100);
+    camera.position.set(0, -0.08, 3.65);
+    camera.lookAt(0, -0.08, 0);
 
     let renderer: THREE.WebGLRenderer;
     try {
@@ -505,52 +699,67 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       return;
     }
 
-    const isMobileDevice =
+    const isMobile =
       typeof window !== "undefined" &&
-      (window.innerWidth < 768 ||
-        window.matchMedia("(pointer: coarse), (hover: none)").matches);
+      (window.innerWidth < 768 || window.matchMedia("(pointer: coarse), (hover: none)").matches);
 
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileDevice ? 1.5 : 2.0));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2.0));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.08;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.domElement.style.touchAction = "pan-y";
     mount.innerHTML = "";
     mount.appendChild(renderer.domElement);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.45);
-    scene.add(ambientLight);
+    // Haute Couture 3-Point Editorial Lighting with Soft Contact Shadows
+    scene.add(new THREE.AmbientLight(0xffffff, 1.35));
 
     const keyLight = new THREE.DirectionalLight(0xfff9f0, 1.85);
     keyLight.position.set(2.5, 4.0, 4.5);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 1024;
+    keyLight.shadow.mapSize.height = 1024;
+    keyLight.shadow.camera.near = 0.5;
+    keyLight.shadow.camera.far = 15;
+    keyLight.shadow.bias = -0.001;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xf5eee6, 1.25);
+    const fillLight = new THREE.DirectionalLight(0xf0eae2, 1.15);
     fillLight.position.set(-2.5, 1.5, 3.0);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight(0xc5a059, 0.85);
+    const rimLight = new THREE.DirectionalLight(0xc5a059, 0.90);
     rimLight.position.set(0.0, 2.5, -3.0);
     scene.add(rimLight);
 
+    const groundBounce = new THREE.DirectionalLight(0xf8f5ee, 0.30);
+    groundBounce.position.set(0, -3.0, 2.0);
+    scene.add(groundBounce);
+
+    // Model group: default 3/4 Editorial Stance (~18 degrees)
     const modelGroup = new THREE.Group();
-    // Default 3/4 Editorial Stance (~20 degrees)
-    modelGroup.rotation.y = 0.35;
+    modelGroup.rotation.y = 0.32;
     scene.add(modelGroup);
 
-    const plinthGeo = new THREE.CylinderGeometry(0.38, 0.42, 0.035, 36);
+    // Architectural Plinth
+    const plinthGeo = new THREE.CylinderGeometry(0.38, 0.42, 0.035, 40);
     const plinthMat = new THREE.MeshStandardMaterial({
       color: 0xedeae3,
-      roughness: 0.8,
-      metalness: 0.05,
+      roughness: 0.82,
+      metalness: 0.04,
     });
     const plinthMesh = new THREE.Mesh(plinthGeo, plinthMat);
     plinthMesh.position.y = -0.96;
+    plinthMesh.receiveShadow = true;
     modelGroup.add(plinthMesh);
 
+    // Procedural Fallback Figure
     const fallbackFigure = createSculptedFacelessFigure();
     modelGroup.add(fallbackFigure);
 
+    // Load High-Precision Mannequin GLB
     const loader = new GLTFLoader();
     loader.load(
       "/models/mannequin.glb",
@@ -560,18 +769,16 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
             mesh.material = new THREE.MeshStandardMaterial({
-              color: 0xf6f3ec,
-              roughness: 0.58,
+              color: 0xd6d0c4,
+              roughness: 0.72,
               metalness: 0.02,
             });
             mesh.castShadow = true;
             mesh.receiveShadow = true;
           }
         });
-
         loadedModel.position.set(0, -0.94, 0);
         loadedModel.scale.setScalar(0.98);
-
         modelGroup.remove(fallbackFigure);
         modelGroup.add(loadedModel);
       },
@@ -581,6 +788,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       }
     );
 
+    // ── Physics Engine for Dynamic Pallu ──────────────────────────────────
     const engine = new SareeDrapeEngine({
       drapeStyle: activeDrape,
       pleatCount,
@@ -588,9 +796,24 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     });
     engineRef.current = engine;
 
+    // ── Silk Shader Uniforms ─────────────────────────────────────────────
+    // ── Silk Shader Uniforms with Real PBR Textures ─────────────────────
     const initialWarp = new THREE.Color(colorway?.hex || "#FAF8F5");
     const initialWeft = new THREE.Color(colorway?.weftHex || "#EFEAE1");
     const initialZari = new THREE.Color(colorway?.zariHex || "#C5A059");
+
+    const textureLoader = new THREE.TextureLoader();
+    const zariBorderTex = textureLoader.load("/textures/zari_border.png");
+    zariBorderTex.wrapS = THREE.RepeatWrapping;
+    zariBorderTex.wrapT = THREE.RepeatWrapping;
+
+    const palluBrocadeTex = textureLoader.load("/textures/pallu_brocade.png");
+    palluBrocadeTex.wrapS = THREE.RepeatWrapping;
+    palluBrocadeTex.wrapT = THREE.ClampToEdgeWrapping;
+
+    const silkNormalTex = textureLoader.load("/textures/silk_normal.png");
+    silkNormalTex.wrapS = THREE.RepeatWrapping;
+    silkNormalTex.wrapT = THREE.RepeatWrapping;
 
     const commonUniforms = {
       uTime: { value: 0 },
@@ -604,9 +827,13 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       uLightIntensity: { value: 1.15 },
       uLightPos: { value: new THREE.Vector3(2.5, 4.0, 4.5) },
       uZoom: { value: 1.0 },
+      uZariTex: { value: zariBorderTex },
+      uPalluTex: { value: palluBrocadeTex },
+      uNormalTex: { value: silkNormalTex },
     };
     uniformsRef.current = commonUniforms;
 
+    // ── Vertex Shader ────────────────────────────────────────────────────
     const vertexShader = `
       precision highp float;
       varying vec2 vUv;
@@ -623,7 +850,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       }
     `;
 
-    // Million-Dollar Silk Fragment Shader (Anisotropic Sheen, SSS, and Electro-Lacquered Zari)
+    // ── Fragment Shader: Anisotropic Silk Luster + SSS + Electro-Lacquered Zari ─
     const fragmentShader = `
       precision highp float;
       uniform vec3 uWarpColor;
@@ -634,37 +861,33 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       uniform vec3 uLightPos;
       uniform float uZoom;
       uniform float uTime;
-      uniform int uBorderMode; // 0=none, 1=skirt_hem, 2=sash_edge, 3=pallu
+      uniform int uBorderMode; // 0=silk, 1=solid_zari, 2=pallu
+
+      uniform sampler2D uZariTex;
+      uniform sampler2D uPalluTex;
+      uniform sampler2D uNormalTex;
 
       varying vec2 vUv;
       varying vec3 vNormal;
       varying vec3 vPosition;
       varying vec3 vViewPosition;
 
-      float getWeaveBump(vec2 uv) {
-        vec2 grid = uv * 240.0;
-        float warpThread = cos(grid.x) * 0.5 + 0.5;
-        float weftThread = sin(grid.y) * 0.5 + 0.5;
-        return mix(warpThread, weftThread, step(0.5, fract(grid.x / 6.28318)));
-      }
-
       void main() {
         vec3 normal = normalize(vNormal);
+
+        // Perturb normal with realistic 3-ply twisted silk micro-twill weave
+        vec3 normSample = texture2D(uNormalTex, vUv * 8.0).rgb * 2.0 - 1.0;
+        normal = normalize(normal + normSample * 0.12);
+
         vec3 viewDir = normalize(vViewPosition);
         vec3 lightDir = normalize(uLightPos - vPosition);
 
-        float weave = getWeaveBump(vUv);
-        normal.xy += (vec2(weave) - 0.5) * 0.028;
-        normal = normalize(normal);
-
-        float NdotL = (dot(normal, lightDir) + 0.45) / 1.45;
-        NdotL = clamp(NdotL, 0.0, 1.0);
-
+        float NdotL = clamp((dot(normal, lightDir) + 0.45) / 1.45, 0.0, 1.0);
         float NdotV = max(dot(normal, viewDir), 0.0);
         float fresnel = pow(1.0 - NdotV, 2.2);
 
-        // Shot-silk two-tone luster
-        vec3 baseSilk = mix(uWarpColor, uWeftColor, clamp(fresnel * 1.25, 0.0, 1.0));
+        // Shot-silk two-tone luster (Dhoop-Chhaon optical shift)
+        vec3 baseSilk = mix(uWarpColor, uWeftColor, clamp(fresnel * 1.30, 0.0, 1.0));
 
         // 1. Anisotropic Silk Highlight along yarn filament direction
         vec3 yarnDir = normalize(vec3(0.0, 1.0, 0.0) - normal * normal.y);
@@ -672,33 +895,42 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
         float TdotH = dot(yarnDir, halfVec);
         float sinTH = sqrt(max(0.0, 1.0 - TdotH * TdotH));
         float anisoSpec = pow(sinTH, 28.0) * max(dot(normal, lightDir), 0.0);
-        vec3 silkShimmer = mix(uWarpColor, vec3(1.0, 0.98, 0.95), 0.6) * anisoSpec * 0.38;
+        vec3 silkShimmer = mix(uWarpColor, vec3(1.0, 0.98, 0.95), 0.6) * anisoSpec * 0.36;
 
         // 2. Subsurface Scattering Translucency Wrap
-        float sss = pow(clamp(dot(viewDir, -lightDir), 0.0, 1.0), 3.0) * 0.28;
+        float sss = pow(clamp(dot(viewDir, -lightDir), 0.0, 1.0), 3.0) * 0.25;
         vec3 sssColor = mix(baseSilk, vec3(1.0, 0.95, 0.90), 0.4) * sss;
 
-        // 3. Selective Zari Borders
+        // 3. Selective Zari Borders & Brocade Panel
         float isBorder = 0.0;
+        vec3 borderCol = uZariColor;
         if (uBorderMode == 1) {
-          isBorder = step(0.93, vUv.y);
+          isBorder = 1.0; // Solid woven Zari border with Korvai temple spires
+          vec4 zTex = texture2D(uZariTex, vec2(vUv.x * 16.0, vUv.y));
+          borderCol = mix(uZariColor * 0.85, uZariColor * 1.25, zTex.r);
         } else if (uBorderMode == 2) {
-          isBorder = step(0.91, vUv.x);
-        } else if (uBorderMode == 3) {
-          isBorder = max(step(0.93, vUv.y), step(0.95, vUv.x));
+          // Dynamic Pallu: Grand Brocade End Panel (bottom 32%)
+          if (vUv.y > 0.68) {
+            float brocV = (vUv.y - 0.68) / 0.32;
+            vec4 pTex = texture2D(uPalluTex, vec2(vUv.x * 2.5, brocV));
+            isBorder = pTex.r;
+            borderCol = mix(uZariColor * 0.90, uZariColor * 1.30, pTex.r);
+          } else {
+            isBorder = max(step(0.92, vUv.x), step(0.92, 1.0 - vUv.x));
+            borderCol = uZariColor;
+          }
         }
 
         // Electro-lacquered antique matte zari with fine micro-sparkle
         float zariMicroSparkle = fract(sin(dot(vUv * 120.0, vec2(12.9898, 78.233))) * 43758.5453);
-        float zariSpec = pow(max(dot(normal, halfVec), 0.0), 16.0) * (0.8 + 0.3 * zariMicroSparkle);
-        vec3 zariGlint = uZariColor * zariSpec * 1.1;
+        float zariSpec = pow(max(dot(normal, halfVec), 0.0), 16.0) * (0.80 + 0.30 * zariMicroSparkle);
+        vec3 zariGlint = borderCol * zariSpec * 1.15;
 
-        float zariLuster = 0.92 + 0.16 * sin(vUv.y * 320.0);
-        vec3 diffuse = mix(baseSilk, uZariColor * zariLuster, isBorder);
-        
-        float groundBounce = max(dot(normal, vec3(0.0, 1.0, 0.3)), 0.0) * 0.25;
-        vec3 ambient = diffuse * (0.92 + groundBounce * 0.15);
-        vec3 directional = diffuse * uLightColor * NdotL * (uLightIntensity * 0.4);
+        vec3 diffuse = mix(baseSilk, borderCol, isBorder);
+
+        float groundBounceLight = max(dot(normal, vec3(0.0, 1.0, 0.3)), 0.0) * 0.22;
+        vec3 ambient = diffuse * (0.92 + groundBounceLight * 0.15);
+        vec3 directional = diffuse * uLightColor * NdotL * (uLightIntensity * 0.38);
         vec3 finalColor = ambient + directional + silkShimmer + sssColor + (zariGlint * isBorder);
 
         gl_FragColor = vec4(finalColor, 1.0);
@@ -707,8 +939,8 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       }
     `;
 
-    const createComponentMaterial = (borderMode: number) => {
-      return new THREE.ShaderMaterial({
+    const createMat = (borderMode: number) =>
+      new THREE.ShaderMaterial({
         vertexShader,
         fragmentShader,
         uniforms: {
@@ -717,38 +949,58 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
         },
         side: THREE.DoubleSide,
       });
-    };
 
-    const blouseMaterial = createComponentMaterial(0);
-    const skirtMaterial = createComponentMaterial(1);
-    const sashMaterial = createComponentMaterial(2);
-    const palluMaterial = createComponentMaterial(3);
+    const silkMat  = createMat(0);
+    const zariMat  = createMat(1);
+    const palluMat = createMat(2);
 
-    const blouse = createTailoredBlouseMesh(blouseMaterial);
+    silkMaterialRef.current = silkMat;
+    zariMaterialRef.current = zariMat;
+
+    // ── Contrasting Haute Couture Choli Material ──────────────────────────
+    // Elegantly separates the cropped blouse from the draped saree silk
+    const isDarkSaree = (initialWarp.r + initialWarp.g + initialWarp.b) / 3.0 < 0.45;
+    const blouseColorHex = isDarkSaree ? 0xe5ded2 : 0x1f1e1c;
+    const blouseMat = new THREE.MeshStandardMaterial({
+      color: blouseColorHex,
+      roughness: 0.68,
+      metalness: 0.08,
+      side: THREE.DoubleSide,
+    });
+
+    // ── Build Garments ───────────────────────────────────────────────────
+
+    // 1. Tailored Choli (Blouse) in Contrasting Raw Silk
+    const blouse = createTailoredBlouseMesh(blouseMat, zariMat);
     modelGroup.add(blouse);
 
-    const sashGeo = createDiagonalSashGeometry(activeDrape);
-    const sashMesh = new THREE.Mesh(sashGeo, sashMaterial);
-    modelGroup.add(sashMesh);
-    sashMeshRef.current = sashMesh;
-
-    const skirtGeo = createPleatedSkirtGeometry(pleatCount);
-    const skirtMesh = new THREE.Mesh(skirtGeo, skirtMaterial);
-    modelGroup.add(skirtMesh);
-    skirtMeshRef.current = skirtMesh;
-
+    // 2. Petticoat Waistband Cinch
     const waistbandGeo = createWaistbandGeometry();
-    const waistbandMesh = new THREE.Mesh(waistbandGeo, blouseMaterial);
+    const waistbandMesh = new THREE.Mesh(waistbandGeo, silkMat);
+    waistbandMesh.castShadow = true;
     modelGroup.add(waistbandMesh);
 
-    const palluGeo = new THREE.PlaneGeometry(0.68, 1.45, engine.gridW - 1, engine.gridH - 1);
+    // 3. Knife-Pleated Saree Skirt (Patli & Hem Border)
+    const skirtGroup = createAuthenticSareeSkirt(pleatCount, silkMat, zariMat);
+    modelGroup.add(skirtGroup);
+    skirtGroupRef.current = skirtGroup;
+
+    // 4. Authentic Torso Drape (Midriff Wrap + Pleated Uparli)
+    const torsoDrapeGroup = createAuthenticTorsoDrape(activeDrape, silkMat, zariMat);
+    modelGroup.add(torsoDrapeGroup);
+    torsoDrapeGroupRef.current = torsoDrapeGroup;
+
+    // 5. Dynamic Pallu Physics Plane
+    const palluGeo = new THREE.PlaneGeometry(0.68, 1.35, engine.gridW - 1, engine.gridH - 1);
     (palluGeo.attributes.position as THREE.BufferAttribute).setUsage(THREE.DynamicDrawUsage);
     engine.syncToBuffer(palluGeo.attributes.position as THREE.BufferAttribute);
     palluGeo.computeVertexNormals();
 
-    const palluMesh = new THREE.Mesh(palluGeo, palluMaterial);
+    const palluMesh = new THREE.Mesh(palluGeo, palluMat);
+    palluMesh.castShadow = true; palluMesh.receiveShadow = true;
     modelGroup.add(palluMesh);
 
+    // ── Raycasting & Gesture Interactions ────────────────────────────────
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     const dragPlane = new THREE.Plane();
@@ -756,11 +1008,11 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
 
     let isPointerDown = false;
     let isDraggingCloth = false;
-    let startPointerX = 0;
-    let startPointerY = 0;
-    let lastPointerX = 0;
-    let angularVelocity = 0;
-    let hasDecidedGesture = false;
+    let startX = 0;
+    let startY = 0;
+    let lastX = 0;
+    let angVel = 0;
+    let decidedGesture = false;
     let isVerticalScroll = false;
 
     const getMouseNDC = (e: PointerEvent) => {
@@ -772,11 +1024,11 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     const handlePointerDown = (e: PointerEvent) => {
       if (!interactive) return;
       isPointerDown = true;
-      startPointerX = e.clientX;
-      startPointerY = e.clientY;
-      lastPointerX = e.clientX;
-      angularVelocity = 0;
-      hasDecidedGesture = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      lastX = e.clientX;
+      angVel = 0;
+      decidedGesture = false;
       isVerticalScroll = false;
 
       getMouseNDC(e);
@@ -785,7 +1037,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       const intersects = raycaster.intersectObjects([palluMesh]);
       if (intersects.length > 0) {
         isDraggingCloth = true;
-        hasDecidedGesture = true;
+        decidedGesture = true;
         setIsGrabbing(true);
         const hitPoint = intersects[0].point;
         engine.grab(hitPoint);
@@ -794,14 +1046,12 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
         dragPlane.setFromNormalAndCoplanarPoint(cameraDir, hitPoint);
 
         if (e.pointerType !== "touch") {
-          setIsGrabbing(true);
           try {
             renderer.domElement.setPointerCapture(e.pointerId);
           } catch {}
         }
       } else {
         isDraggingCloth = false;
-        // On desktop mouse, immediately allow orbit
         if (e.pointerType !== "touch") {
           setIsOrbiting(true);
           try {
@@ -815,14 +1065,13 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       if (!isPointerDown) return;
 
       // Smart Gesture Disambiguation on Mobile Touch:
-      if (e.pointerType === "touch" && !hasDecidedGesture) {
-        const dx = Math.abs(e.clientX - startPointerX);
-        const dy = Math.abs(e.clientY - startPointerY);
+      if (e.pointerType === "touch" && !decidedGesture) {
+        const dx = Math.abs(e.clientX - startX);
+        const dy = Math.abs(e.clientY - startY);
 
         if (dy > dx && dy > 8) {
-          // Dominant vertical gesture: let native page scroll proceed without capturing touch
           isVerticalScroll = true;
-          hasDecidedGesture = true;
+          decidedGesture = true;
           isPointerDown = false;
           if (isDraggingCloth) {
             engine.releaseGrab();
@@ -831,8 +1080,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
           }
           return;
         } else if (dx > 8 || (isDraggingCloth && (dx > 6 || dy > 6))) {
-          // Dominant horizontal or intentional cloth grab gesture
-          hasDecidedGesture = true;
+          decidedGesture = true;
           if (isDraggingCloth) {
             setIsGrabbing(true);
           } else {
@@ -842,7 +1090,7 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
             renderer.domElement.setPointerCapture(e.pointerId);
           } catch {}
         } else {
-          return; // Deadzone threshold
+          return;
         }
       }
 
@@ -856,10 +1104,10 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
           engine.updateGrab(planeIntersect);
         }
       } else {
-        const deltaX = (e.clientX - lastPointerX) * 0.007;
-        angularVelocity = deltaX;
+        const deltaX = (e.clientX - lastX) * 0.007;
+        angVel = deltaX;
         modelGroup.rotation.y += deltaX;
-        lastPointerX = e.clientX;
+        lastX = e.clientX;
       }
     };
 
@@ -913,29 +1161,28 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
     const animate = () => {
       animId = requestAnimationFrame(animate);
 
-      // Skip GPU computation & rendering when scrolled out of view
       if (!isVisibleInViewport) return;
 
       const delta = Math.min(clock.getDelta(), 0.033);
       commonUniforms.uTime.value += delta;
 
+      // Smooth colorway transition
       commonUniforms.uWarpColor.value.lerp(commonUniforms.uTargetWarp.value, 0.08);
       commonUniforms.uWeftColor.value.lerp(commonUniforms.uTargetWeft.value, 0.08);
       commonUniforms.uZariColor.value.lerp(commonUniforms.uTargetZari.value, 0.08);
 
-      // Smooth Turntable Inertia with breathing sway
+      // Smooth Turntable Inertia with subtle breathing micro-sway
       if (!isPointerDown) {
-        modelGroup.rotation.y += angularVelocity;
-        angularVelocity *= 0.93; // Smooth inertial friction
+        modelGroup.rotation.y += angVel;
+        angVel *= 0.93; // Inertial friction
 
-        // Gentle breathing micro-sway when at rest
-        if (Math.abs(angularVelocity) < 0.0005) {
+        if (Math.abs(angVel) < 0.0005) {
           modelGroup.rotation.y += Math.sin(commonUniforms.uTime.value * 0.8) * 0.0006;
         }
       }
 
       // Step physics engine with aerodynamic air drag from turntable rotation
-      engine.step(delta, angularVelocity);
+      engine.step(delta, angVel);
       engine.syncToBuffer(palluGeo.attributes.position as THREE.BufferAttribute);
       palluGeo.computeVertexNormals();
 
@@ -969,22 +1216,30 @@ export const TextileCanvas: React.FC<TextileCanvasProps> = ({
       blouse.traverse((c) => {
         if ((c as THREE.Mesh).geometry) (c as THREE.Mesh).geometry.dispose();
       });
-      sashGeo.dispose();
-      skirtGeo.dispose();
+      skirtGroup.traverse((c) => {
+        if ((c as THREE.Mesh).geometry) (c as THREE.Mesh).geometry.dispose();
+      });
+      torsoDrapeGroup.traverse((c) => {
+        if ((c as THREE.Mesh).geometry) (c as THREE.Mesh).geometry.dispose();
+      });
       waistbandGeo.dispose();
       palluGeo.dispose();
       plinthGeo.dispose();
-      blouseMaterial.dispose();
-      skirtMaterial.dispose();
-      sashMaterial.dispose();
-      palluMaterial.dispose();
+
+      silkMat.dispose();
+      zariMat.dispose();
+      palluMat.dispose();
+      plinthMat.dispose();
+
       renderer.dispose();
       if (mount && mount.contains(renderer.domElement)) {
         mount.removeChild(renderer.domElement);
       }
       engineRef.current = null;
-      skirtMeshRef.current = null;
-      sashMeshRef.current = null;
+      skirtGroupRef.current = null;
+      torsoDrapeGroupRef.current = null;
+      silkMaterialRef.current = null;
+      zariMaterialRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [interactive]);
