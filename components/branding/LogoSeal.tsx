@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 
 interface LogoSealProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
@@ -11,6 +11,14 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
   className = "",
   ...props
 }) => {
+  const rawId = useId();
+  const uid = `seal-grad-${rawId.replace(/:/g, "")}`;
+
+  // Paisley mark centered in the 260x260 seal at (130, 130)
+  const scale = 0.231;
+  const tx = 130 - 257.5 * scale;
+  const ty = 130 - 182.5 * scale;
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +32,7 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
     >
       <defs>
         {/* Antique Matte Zari Electroplate Gradient */}
-        <linearGradient id="sealZariGrad" x1="15%" y1="10%" x2="90%" y2="90%">
+        <linearGradient id={`${uid}-zari`} x1="15%" y1="10%" x2="90%" y2="90%">
           <stop offset="0%" stopColor="#DFBF76" />
           <stop offset="40%" stopColor="#C5A059" />
           <stop offset="75%" stopColor="#AD8740" />
@@ -33,12 +41,12 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
 
         {/* Circular text paths for flawless curved typography */}
         <path
-          id="sealOuterTextPath"
+          id={`${uid}-outerText`}
           d="M 130 18 A 112 112 0 1 1 129.9 18"
           fill="none"
         />
         <path
-          id="sealInnerTextPath"
+          id={`${uid}-innerText`}
           d="M 130 42 A 88 88 0 1 1 129.9 42"
           fill="none"
         />
@@ -59,7 +67,7 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
             y1={y1}
             x2={x2}
             y2={y2}
-            stroke={monochrome ? "currentColor" : "url(#sealZariGrad)"}
+            stroke={monochrome ? "currentColor" : `url(#${uid}-zari)`}
             strokeWidth={i % 4 === 0 ? "2" : "1"}
             strokeOpacity={i % 4 === 0 ? "0.9" : "0.5"}
           />
@@ -72,7 +80,7 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
         cx="130"
         cy="130"
         r="118"
-        stroke={monochrome ? "currentColor" : "url(#sealZariGrad)"}
+        stroke={monochrome ? "currentColor" : `url(#${uid}-zari)`}
         strokeWidth="2.5"
       />
       {/* Secondary Inner Hairline */}
@@ -93,7 +101,7 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
         fontFamily="var(--font-sans), monospace"
         letterSpacing="0.32em"
       >
-        <textPath href="#sealOuterTextPath" startOffset="0%">
+        <textPath href={`#${uid}-outerText`} startOffset="0%">
           ✦ RAMI STUDIO · HAUTE HANDLOOM MAISON · KANCHIPURAM · EST. 2026
         </textPath>
       </text>
@@ -103,7 +111,7 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
         cx="130"
         cy="130"
         r="98"
-        stroke={monochrome ? "currentColor" : "url(#sealZariGrad)"}
+        stroke={monochrome ? "currentColor" : `url(#${uid}-zari)`}
         strokeWidth="1.2"
       />
 
@@ -115,7 +123,7 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
         fontFamily="var(--font-sans), monospace"
         letterSpacing="0.28em"
       >
-        <textPath href="#sealInnerTextPath" startOffset="2%">
+        <textPath href={`#${uid}-innerText`} startOffset="2%">
           ✦ 100% PURE MULBERRY SILK · REAL SILVER ZARI CERTIFIED ✦
         </textPath>
       </text>
@@ -125,7 +133,7 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
         cx="130"
         cy="130"
         r="76"
-        stroke={monochrome ? "currentColor" : "url(#sealZariGrad)"}
+        stroke={monochrome ? "currentColor" : `url(#${uid}-zari)`}
         strokeWidth="2"
       />
       <circle
@@ -153,14 +161,14 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
             y1={y1}
             x2={x2}
             y2={y2}
-            stroke={monochrome ? "currentColor" : "url(#sealZariGrad)"}
+            stroke={monochrome ? "currentColor" : `url(#${uid}-zari)`}
             strokeWidth="0.75"
             strokeOpacity="0.35"
           />
         );
       })}
 
-      {/* ── 5. CENTERPIECE: IMPERIAL 'RS' SOVEREIGN CREST ── */}
+      {/* ── 5. CENTERPIECE: PAISLEY SOVEREIGN CREST ── */}
       {/* Background Cartouche Diamond */}
       <rect
         x="106"
@@ -168,31 +176,52 @@ export const LogoSeal: React.FC<LogoSealProps> = ({
         width="48"
         height="48"
         transform="rotate(45 130 130)"
-        stroke={monochrome ? "currentColor" : "url(#sealZariGrad)"}
+        stroke={monochrome ? "currentColor" : `url(#${uid}-zari)`}
         strokeWidth="1.5"
         fill="#F9F8F6"
       />
 
-      {/* Sculpted Bold 'R' in Seal */}
-      <path
-        d="M 112 110 H 125 C 134 110 140 114 140 121 C 140 127 135 131 126 131 H 118 V 148 H 112 Z M 118 116 V 125 H 124 C 128 125 132 124 132 121 C 132 117 128 116 124 116 Z"
-        fill={monochrome ? "currentColor" : "#1A1A18"}
-      />
-      {/* 'R' Tail */}
-      <path
-        d="M 124 131 L 138 148 H 146 L 131 129 Z"
-        fill={monochrome ? "currentColor" : "#1A1A18"}
-      />
+      {/* Paisley Hallmark Centerpiece */}
+      <g
+        transform={`translate(${tx}, ${ty}) scale(${scale})`}
+        stroke={monochrome ? "currentColor" : "#1A1A18"}
+        strokeLinecap="round"
+      >
+        {/* Outer silhouette */}
+        <path
+          d="M240 70 C320 80 345 170 305 235 C275 285 205 295 185 250 C170 215 205 190 232 208 C255 224 248 252 228 250"
+          strokeWidth="7"
+        />
 
-      {/* Golden 'S' Ribbon Intertwining */}
-      <path
-        d="M 143 115 C 140 111 133 110 126 112 C 121 113 119 117 121 120 C 122 122 125 123 129 125 L 133 126 C 139 128 143 132 142 138 C 141 144 135 149 126 150 C 119 151 114 147 113 143 H 118 C 118 145 122 147 126 146 C 131 145 135 142 136 137 C 136 132 133 130 128 128 L 123 126 C 118 124 115 120 116 115 C 117 109 123 106 130 106 C 137 106 143 109 144 115 Z"
-        fill={monochrome ? "currentColor" : "url(#sealZariGrad)"}
-      />
+        {/* Inner contour */}
+        <path
+          d="M240 100 C298 108 318 172 288 220"
+          strokeWidth="5"
+          strokeOpacity="0.7"
+        />
 
-      {/* Central Diamond Hallmark Accent */}
-      <g transform="translate(130, 130)">
-        <polygon points="0,-4 3,0 0,4 -3,0" fill={monochrome ? "currentColor" : "url(#sealZariGrad)"} />
+        {/* Graduated trio of pearls */}
+        <circle
+          cx="262"
+          cy="150"
+          r="8"
+          fill={monochrome ? "currentColor" : `url(#${uid}-zari)`}
+          stroke="none"
+        />
+        <circle
+          cx="280"
+          cy="182"
+          r="6.5"
+          fill={monochrome ? "currentColor" : `url(#${uid}-zari)`}
+          stroke="none"
+        />
+        <circle
+          cx="268"
+          cy="214"
+          r="5"
+          fill={monochrome ? "currentColor" : `url(#${uid}-zari)`}
+          stroke="none"
+        />
       </g>
     </svg>
   );

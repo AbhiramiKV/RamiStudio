@@ -114,6 +114,8 @@ export const HeroSection: React.FC = () => {
             <TextileCanvas
               colorway={selectedColorway}
               fallbackImage={featuredSaree.images.hero}
+              modelImage={featuredSaree.images.modelDrape}
+              palluImage={featuredSaree.images.palluSpread}
               title={featuredSaree.title}
             />
           </div>

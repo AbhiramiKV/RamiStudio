@@ -77,19 +77,16 @@ export const Header: React.FC = () => {
 
               <Link
                 href="/"
-                className="flex items-center gap-2 group min-w-[36px]"
+                className="hidden sm:flex items-center gap-2 group min-w-[32px]"
                 data-cursor="HOME"
               >
                 <LogoMonogram
                   size={28}
                   className="text-text-primary transition-transform duration-300 group-hover:scale-105 sm:w-[32px] sm:h-[32px]"
                 />
-                <span className="hidden xl:inline text-[10px] font-mono tracking-[0.2em] text-accent-zari-hover uppercase">
-                  Heirloom Edition
-                </span>
               </Link>
 
-              <nav className="hidden lg:flex items-center gap-6 text-[11px] font-mono tracking-[0.14em] uppercase text-text-secondary">
+              <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 2xl:gap-6 text-[11px] font-mono tracking-[0.14em] uppercase text-text-secondary">
                 <Link
                   href="/sarees"
                   className="hover:text-text-primary transition-colors"
@@ -114,14 +111,6 @@ export const Header: React.FC = () => {
                 >
                   Swatch Folio
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => window.dispatchEvent(new CustomEvent("replay-saree-film"))}
-                  className="hover:text-accent-zari transition-colors flex items-center gap-1 cursor-pointer"
-                  title="Experience 3D Saree Film"
-                >
-                  <span>Film</span>
-                </button>
               </nav>
             </div>
 
@@ -138,7 +127,18 @@ export const Header: React.FC = () => {
             </div>
 
             {/* Right: Currency Switcher, Search & Bag Drawer Trigger */}
-            <div className="flex items-center gap-2 sm:gap-4 md:gap-5">
+            <div className="flex items-center gap-1.5 sm:gap-3 md:gap-4">
+              {/* Saree Film Experience Trigger */}
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("replay-saree-film"))}
+                className="hidden lg:flex items-center gap-1.5 text-[10px] font-mono tracking-[0.14em] uppercase text-text-secondary hover:text-accent-zari-hover px-2.5 py-1 rounded-xs border border-surface-border/60 hover:border-accent-zari/40 transition-colors cursor-pointer"
+                title="Experience 3D Saree Film"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-zari animate-pulse" />
+                <span>Film</span>
+              </button>
+
               {/* Quick Search Trigger */}
               <button
                 onClick={() => setSearchOpen(true)}

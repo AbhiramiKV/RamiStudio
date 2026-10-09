@@ -15,7 +15,7 @@ export const EditorialJournal: React.FC = () => {
         "The sacred continuity of the unstitched six yards—why a pure handloom saree is the only garment passed from mother to daughter without tailoring.",
       category: "HERITAGE ESSAY",
       readTime: "4 MIN READ",
-      image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/products/alabaster-pallu.jpg",
       linkedProductSlug: "alabaster-monolith",
     },
     {
@@ -26,7 +26,7 @@ export const EditorialJournal: React.FC = () => {
         "Inside Chinna Kanchipuram: How two master weavers toss shuttles simultaneously across the warp divide so border meets body without a single seam.",
       category: "WEAVER MONOGRAPH",
       readTime: "6 MIN READ",
-      image: "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/products/obsidian-veil-pallu.jpg",
       linkedProductSlug: "obsidian-veil-shot-silk",
     },
     {
@@ -37,7 +37,7 @@ export const EditorialJournal: React.FC = () => {
         "Certified silver electroplated over pure silk thread and brushed with natural lacquer to absorb camera flash and glow under wedding chandeliers.",
       category: "METALLURGY & CRAFT",
       readTime: "3 MIN READ",
-      image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/products/sage-weave.jpg",
       linkedProductSlug: "gossamer-sage-mirage",
     },
   ];

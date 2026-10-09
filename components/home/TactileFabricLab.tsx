@@ -22,8 +22,8 @@ export const TactileFabricLab: React.FC = () => {
       warpWeft: "20/22 Denier High-Twist Katan Organza",
       zariType: "Sub-micron Electro-oxidized Antique Pale Gold",
       origin: "Varanasi, Uttar Pradesh",
-      image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1200&auto=format&fit=crop",
-      macroImage: "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/products/sage-model.jpg",
+      macroImage: "/images/products/sage-weave.jpg",
     },
     210: {
       name: "Heavy Pure Mulberry Kanchipuram Silk",
@@ -34,8 +34,8 @@ export const TactileFabricLab: React.FC = () => {
       warpWeft: "2/120s Degummed Mulberry Silk × 3-Ply Filature Weft",
       zariType: "Certified 1.8g Silver-Plated Electro-lacquered Matte Zari",
       origin: "Chinna Kanchipuram, Tamil Nadu",
-      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1200&auto=format&fit=crop",
-      macroImage: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
+      image: "/images/products/alabaster-model.jpg",
+      macroImage: "/images/products/alabaster-weave.jpg",
     },
   };
 

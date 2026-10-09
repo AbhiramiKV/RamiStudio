@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export type DrapeStyle = "nivi" | "seedha" | "cape";
+export type DrapeStyle = "swatch" | "nivi" | "seedha" | "cape";
 
 export interface DrapeEngineOptions {
   pleatCount: number;
@@ -106,7 +106,33 @@ export class SareeDrapeEngine {
     this.drapeStyle = style;
     this.pinned.fill(0);
 
-    if (style === "nivi") {
+    if (style === "swatch") {
+      // Atelier Swatch: Suspended gracefully across brushed brass rod (y = 0.52, x = -0.34 to +0.34)
+      for (let y = 0; y < this.gridH; y++) {
+        for (let x = 0; x < this.gridW; x++) {
+          const i = (y * this.gridW + x) * 3;
+          const u = x / (this.gridW - 1);
+          const v = y / (this.gridH - 1);
+
+          const width = 0.68;
+          const anchorX = (u - 0.5) * width;
+          const anchorY = 0.52 - v * 1.15;
+          // Natural delicate ripples and catenary sag
+          const anchorZ = Math.sin(u * Math.PI * 4.0) * 0.015 - Math.sin(v * Math.PI * 0.5) * 0.035;
+
+          this.pos[i]     = anchorX;
+          this.pos[i + 1] = anchorY;
+          this.pos[i + 2] = anchorZ;
+          this.prevPos[i]     = anchorX;
+          this.prevPos[i + 1] = anchorY;
+          this.prevPos[i + 2] = anchorZ;
+        }
+      }
+      // Pin top row to rod
+      for (let x = 0; x < this.gridW; x++) {
+        this.pinned[x] = 1;
+      }
+    } else if (style === "nivi") {
       // Classic Nivi: Pinned across left shoulder crest (y = 0.505, x = -0.185)
       // Cascades gracefully down the back to y = -0.55 (mid-calf level)
       for (let y = 0; y < this.gridH; y++) {
@@ -350,6 +376,7 @@ export class SareeDrapeEngine {
 
   // Precise anatomical collision preventing pallu from clipping into mannequin body
   private resolveMannequinCollision() {
+    if (this.drapeStyle === "swatch") return;
     const margin = 0.012;
 
     for (let i = 0; i < this.numParticles; i++) {

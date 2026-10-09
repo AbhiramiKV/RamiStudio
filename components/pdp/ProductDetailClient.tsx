@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { SareeProduct, Colorway, SareeCustomizations } from "@/lib/types";
 import { TextileCanvas } from "@/components/canvas/TextileCanvas";
+import { RotationalDrape360 } from "@/components/canvas/RotationalDrape360";
+import { SixYardRitualStepper } from "@/components/pdp/SixYardRitualStepper";
 import { useCartStore } from "@/lib/stores/cartStore";
 import { useCanvasStore, LightingMode } from "@/lib/stores/canvasStore";
 import { SilkMarkModal } from "@/components/trust/SilkMarkModal";
@@ -31,48 +33,128 @@ interface ProductDetailClientProps {
   saree: SareeProduct;
 }
 
-const METROLOGY_PINS = [
+const ANGLE_METROLOGY_PINS: Record<
+  number,
   {
-    id: 1,
-    top: "23%",
-    left: "40%",
-    label: "01. SHOULDER",
-    badge: "PIN 01 · SHOULDER ANCHORING",
-    title: "Left Clavicle Brooch & Weight Anchor",
-    desc: "4 uniform knife pleats pinned neatly to the choli seam with an heirloom pin. Counterbalances the 1.80m cascading pallu without pulling on the neck.",
-    metric: "Weight Distribution: 62% Shoulder / 38% Waist · 4 Pinned Pleats",
-  },
-  {
-    id: 2,
-    top: "39%",
-    left: "54%",
-    label: "02. BIAS SWEEP",
-    badge: "PIN 02 · BIAS UPARLI SWEEP",
-    title: "Continuous 45° Cross-Bust Bias Drape",
-    desc: "Sweeps diagonally from right waist across the bosom to left shoulder. The 45° bias grain activates Dhoop-Chhaon twill color shift and exposes subtle midriff contour.",
-    metric: "Tension: 14.2 N/m supple bias · Zero chest sagging",
-  },
-  {
-    id: 3,
-    top: "56%",
-    left: "48%",
-    label: "03. PATLI PLEATS",
-    badge: "PIN 03 · PATLI KNIFE PLEATS",
-    title: "7 Hand-Folded Accordion Pleats",
-    desc: "Anchored firmly into the waistband cordon at the center navel. Pure high-twist mulberry silk retains sharp geometric creasing throughout all-day ceremonial wear.",
-    metric: "Pleat Depth: 14cm (5.5\") · Cotton Fall Tape Stabilized",
-  },
-  {
-    id: 4,
-    top: "73%",
-    left: "58%",
-    label: "04. PALLU BORDER",
-    badge: "PIN 04 · PALLU BORDER CASCADE",
-    title: "8.5cm Interlocked Zari Pallu Border",
-    desc: "Cascades gracefully along the left flank, revealing the intricate Korvai temple border and certified electro-lacquered pure silver zari.",
-    metric: "Zari Purity: 98.2% Silver Wire · 8.5cm Temple Border",
-  },
-];
+    id: number;
+    top: string;
+    left: string;
+    label: string;
+    badge: string;
+    title: string;
+    desc: string;
+    metric: string;
+  }[]
+> = {
+  0: [
+    {
+      id: 1,
+      top: "23%",
+      left: "40%",
+      label: "01. SHOULDER",
+      badge: "PIN 01 · SHOULDER ANCHORING",
+      title: "Left Clavicle Brooch & Weight Anchor",
+      desc: "4 uniform knife pleats pinned neatly to the choli seam with an heirloom pin. Counterbalances the 1.80m cascading pallu without pulling on the neck.",
+      metric: "Weight Distribution: 62% Shoulder / 38% Waist · 4 Pinned Pleats",
+    },
+    {
+      id: 2,
+      top: "39%",
+      left: "54%",
+      label: "02. BIAS SWEEP",
+      badge: "PIN 02 · BIAS UPARLI SWEEP",
+      title: "Continuous 45° Cross-Bust Bias Drape",
+      desc: "Sweeps diagonally from right waist across the bosom to left shoulder. The 45° bias grain activates Dhoop-Chhaon twill color shift and exposes subtle midriff contour.",
+      metric: "Tension: 14.2 N/m supple bias · Zero chest sagging",
+    },
+    {
+      id: 3,
+      top: "56%",
+      left: "48%",
+      label: "03. PATLI PLEATS",
+      badge: "PIN 03 · PATLI KNIFE PLEATS",
+      title: "7 Hand-Folded Accordion Pleats",
+      desc: "Anchored firmly into the waistband cordon at the center navel. Pure high-twist mulberry silk retains sharp geometric creasing throughout all-day ceremonial wear.",
+      metric: "Pleat Depth: 14cm (5.5\") · Cotton Fall Tape Stabilized",
+    },
+    {
+      id: 4,
+      top: "73%",
+      left: "58%",
+      label: "04. PALLU BORDER",
+      badge: "PIN 04 · PALLU BORDER CASCADE",
+      title: "8.5cm Interlocked Zari Pallu Border",
+      desc: "Cascades gracefully along the left flank, revealing the intricate Korvai temple border and certified electro-lacquered pure silver zari.",
+      metric: "Zari Purity: 98.2% Silver Wire · 8.5cm Temple Border",
+    },
+  ],
+  1: [
+    {
+      id: 101,
+      top: "32%",
+      left: "46%",
+      label: "01. CHOLI BACK",
+      badge: "CHOLI BACK · DORI & LATKANS",
+      title: "Tailored Sweetheart Cutout & Pearl Latkans",
+      desc: "Architecturally contoured back choli cutout tied securely with hand-reeled silk dori cords and clustered seed-pearl tassels. Prevents shoulder slipping while highlighting posture.",
+      metric: "Bespoke Cut: 4-inch deep teardrop cutout · Reinforced dori loops",
+    },
+    {
+      id: 102,
+      top: "65%",
+      left: "58%",
+      label: "02. BROCADE PALLU",
+      badge: "ANCHAL · ZARI END-PIECE",
+      title: "1.80m Full Brocade Zari Cascade",
+      desc: "The grand end-piece (Anchal) falls unimpeded past the knee, showcasing certified pure silver/gold electro-lacquered zari woven on double-shuttle wooden pit looms.",
+      metric: "Drop Length: 1.80m continuous weave · 0 seam allowances",
+    },
+  ],
+  2: [
+    {
+      id: 201,
+      top: "26%",
+      left: "50%",
+      label: "01. ODDIYANAM",
+      badge: "WAISTBAND · KAMARBANDH",
+      title: "Antique Gold Waist Cinch & Navel Tuck",
+      desc: "The knife pleats are cinched at the center navel by an antique gold Oddiyanam belt, anchoring the fabric firmly into the mul-mul petticoat cordon.",
+      metric: "Waist Retention: 38% total garment mass · Zero downward slip",
+    },
+    {
+      id: 202,
+      top: "62%",
+      left: "46%",
+      label: "02. PATLI ARCHITECTURE",
+      badge: "KNIFE PLEATS · FALL TAPE",
+      title: "7 Razor-Sharp Accordion Pleats",
+      desc: "Each pleat is measured to 14cm (5.5 inches) and secured with unbleached hand-stitched cotton fall tape, ensuring crisp sculptural folds that sway fluidly in motion.",
+      metric: "Crease Memory: 3-ply high-twist mulberry warp · 7 crisp patli folds",
+    },
+  ],
+  3: [
+    {
+      id: 301,
+      top: "35%",
+      left: "45%",
+      label: "01. KORVAI DIVIDE",
+      badge: "PIT LOOM · SEAMLESS INTERLOCK",
+      title: "Two-Artisan Synchronized Throw-Shuttle",
+      desc: "Two master weavers toss shuttles in unison across the warp divide so the pure mulberry silk body and heavy metallic zari border interlock without a single seam.",
+      metric: "Loom Heritage: 24 Days Crafting · Dual-treadle pit loom",
+    },
+    {
+      id: 302,
+      top: "66%",
+      left: "60%",
+      label: "02. CERTIFIED ZARI",
+      badge: "METALLURGY · ELECTRO-LACQUER",
+      title: "98.2% Silver Wire with Natural Lacquer",
+      desc: "Certified 1.8g pure silver electroplated wire brushed with botanical lacquer to soften metallic glare into a warm heirloom candlelight sheen.",
+      metric: "Purity Assay: 98.2% Silver Electroplated · Silk Mark Certified",
+    },
+  ],
+};
 
 export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
   saree,
@@ -80,11 +162,42 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
   const [selectedColorway, setSelectedColorway] = useState<Colorway>(
     saree.colorways[0]
   );
-  const [activeView, setActiveView] = useState<"couture" | "3d" | "macro">("couture");
+  const [activeView, setActiveView] = useState<"360" | "ritual" | "tactile">("360");
   const [activeAngleIndex, setActiveAngleIndex] = useState<number>(0);
   const [activePinId, setActivePinId] = useState<number | null>(2);
   const [addedAnimation, setAddedAnimation] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
+
+  const drapeFrames = [
+    {
+      label: "FRONT SILHOUETTE",
+      subLabel: "0° · Classical Front Balance",
+      angleDegrees: 0,
+      image: saree.images.modelDrape || saree.images.drape || saree.images.hero,
+      pins: ANGLE_METROLOGY_PINS[0] || [],
+    },
+    {
+      label: "PROFILE SWEEP",
+      subLabel: "90° · Bias Fall & Flank Contour",
+      angleDegrees: 90,
+      image: saree.images.hero || saree.images.modelDrape || saree.images.drape,
+      pins: ANGLE_METROLOGY_PINS[1] || [],
+    },
+    {
+      label: "PALLU CASCADE",
+      subLabel: "180° · Grand Brocade End Panel",
+      angleDegrees: 180,
+      image: saree.images.palluSpread || saree.images.hero,
+      pins: ANGLE_METROLOGY_PINS[2] || [],
+    },
+    {
+      label: "PLEAT ARCHITECTURE",
+      subLabel: "270° · Accordion Patli Alignment",
+      angleDegrees: 270,
+      image: saree.images.drape || saree.images.modelDrape || saree.images.hero,
+      pins: ANGLE_METROLOGY_PINS[3] || [],
+    },
+  ];
 
   const drapeAngles = [
     { label: "01 · FRONT SILHOUETTE", image: saree.images.modelDrape || saree.images.drape },
@@ -174,180 +287,77 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
       {/* 50/50 Desktop Split Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
         {/* LEFT COLUMN: Sticky Haute Couture Drape / 3D WebGL Stage */}
-        <div className="lg:col-span-7 lg:sticky lg:top-28 space-y-4">
+        <div className="lg:col-span-7 lg:sticky lg:top-28 space-y-3">
+          {/* Haute Atelier Mode Toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-border/80 pb-2.5">
+            <div className="flex items-center gap-2 text-[10px] font-mono tracking-widest text-text-tertiary uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-zari animate-pulse"></span>
+              <span className="text-text-primary font-medium">ATELIER DRAPE METROLOGY</span>
+            </div>
+
+            <div className="flex items-center gap-1 bg-canvas-elevated p-1 border border-surface-border rounded-xs shadow-xs">
+              <button
+                onClick={() => setActiveView("360")}
+                className={`px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase transition-all rounded-xs flex items-center gap-1.5 ${
+                  activeView === "360"
+                    ? "bg-text-primary text-canvas-base font-bold shadow-xs"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+              >
+                <span>360° DRAPE</span>
+              </button>
+              <button
+                onClick={() => setActiveView("ritual")}
+                className={`px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase transition-all rounded-xs flex items-center gap-1.5 ${
+                  activeView === "ritual"
+                    ? "bg-text-primary text-canvas-base font-bold shadow-xs"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+              >
+                <span>6-YARD RITUAL</span>
+              </button>
+              <button
+                onClick={() => setActiveView("tactile")}
+                className={`px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase transition-all rounded-xs flex items-center gap-1.5 ${
+                  activeView === "tactile"
+                    ? "bg-text-primary text-canvas-base font-bold shadow-xs"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+              >
+                <span>TACTILE WEAVE LAB</span>
+              </button>
+            </div>
+          </div>
+
           <div className="relative aspect-[3/4] w-full bg-canvas-elevated border border-surface-border overflow-hidden rounded-xs shadow-xl">
-            {activeView === "3d" ? (
+            {activeView === "360" && (
+              <RotationalDrape360 frames={drapeFrames} title={saree.title} />
+            )}
+            {activeView === "ritual" && (
+              <SixYardRitualStepper saree={saree} />
+            )}
+            {activeView === "tactile" && (
               <TextileCanvas
                 colorway={selectedColorway}
                 fallbackImage={saree.images.hero}
+                modelImage={saree.images.modelDrape || saree.images.drape}
+                palluImage={saree.images.palluSpread || saree.images.hero}
                 title={saree.title}
               />
-            ) : activeView === "macro" ? (
-              <div className="relative w-full h-full cursor-zoom-in">
-                <Image
-                  src={saree.images.macro}
-                  alt={`${saree.title} Weave Macro`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 60vw"
-                  className="object-cover scale-150 transition-transform duration-700"
-                  priority
-                />
-                <div className="absolute top-4 left-4 bg-canvas-base/85 backdrop-blur-md px-3 py-1.5 border border-surface-border text-[10px] font-mono tracking-widest text-text-primary">
-                  100% UNTREATED NATURAL SILK MACRO WEAVE
-                </div>
-              </div>
-            ) : (
-              <div className="relative w-full h-full">
-                <Image
-                  src={drapeAngles[activeAngleIndex]?.image || saree.images.modelDrape || saree.images.drape}
-                  alt={`${saree.title} Couture Drape`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 60vw"
-                  className="object-cover transition-opacity duration-500"
-                  priority
-                />
-
-                {/* Interactive Metrology Pins (Active on Front Silhouette) */}
-                {activeAngleIndex === 0 && (
-                  <div className="absolute inset-0 pointer-events-none">
-                    {METROLOGY_PINS.map((pin) => {
-                      const isSelected = activePinId === pin.id;
-                      return (
-                        <button
-                          key={pin.id}
-                          onClick={() => setActivePinId(isSelected ? null : pin.id)}
-                          style={{ top: pin.top, left: pin.left }}
-                          className="absolute pointer-events-auto -translate-x-1/2 -translate-y-1/2 group flex items-center gap-1.5 focus:outline-none"
-                          title={pin.title}
-                        >
-                          <span className="relative flex h-6 w-6 items-center justify-center">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-zari opacity-50"></span>
-                            <span
-                              className={`relative inline-flex rounded-full h-4 w-4 border-2 border-canvas-base shadow-lg transition-transform group-hover:scale-125 ${
-                                isSelected ? "bg-accent-zari-hover scale-125 ring-2 ring-accent-zari" : "bg-accent-zari"
-                              }`}
-                            ></span>
-                          </span>
-                          <span className="px-2 py-0.5 bg-canvas-base/90 backdrop-blur-md border border-surface-border text-[9px] font-mono tracking-wider text-text-primary uppercase shadow-md opacity-90 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                            {pin.label}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Active Pin Metrology HUD Card */}
-                {activePinId !== null && (
-                  <div className="absolute bottom-14 left-4 right-4 sm:left-6 sm:right-6 bg-canvas-base/95 backdrop-blur-md border border-accent-zari/50 p-4 rounded-xs shadow-2xl z-20">
-                    {(() => {
-                      const pin = METROLOGY_PINS.find((p) => p.id === activePinId);
-                      if (!pin) return null;
-                      return (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="px-2 py-0.5 bg-accent-zari/15 border border-accent-zari/40 text-accent-zari text-[9px] font-mono tracking-widest uppercase">
-                              {pin.badge}
-                            </span>
-                            <button
-                              onClick={() => setActivePinId(null)}
-                              className="text-text-tertiary hover:text-text-primary text-[10px] font-mono px-1.5 py-0.5"
-                            >
-                              ✕ CLOSE
-                            </button>
-                          </div>
-                          <h4 className="font-serif text-sm font-medium text-text-primary">{pin.title}</h4>
-                          <p className="text-[11px] text-text-secondary leading-relaxed font-light">{pin.desc}</p>
-                          <div className="pt-2 border-t border-surface-border/60 text-[10px] font-mono text-accent-zari-hover font-medium">
-                            METRIC: {pin.metric}
-                          </div>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                )}
-
-                {/* Drape Metrology Ticker Banner */}
-                <div className="absolute bottom-0 inset-x-0 bg-canvas-base/90 backdrop-blur-md border-t border-surface-border py-2 px-4 flex items-center justify-between text-[9px] font-mono tracking-widest text-text-secondary overflow-x-auto whitespace-nowrap gap-4">
-                  <div>TOTAL SILK: <span className="text-accent-zari font-bold">5.50M</span></div>
-                  <div>PALLU DROP: <span className="text-accent-zari font-bold">1.80M</span></div>
-                  <div>PLEATS: <span className="text-accent-zari font-bold">7 PATLI</span></div>
-                  <div>WEAVE: <span className="text-accent-zari font-bold">{saree.specs.weightGrams}G KORVAI</span></div>
-                </div>
-              </div>
             )}
-
-            {/* Viewport Control Badges */}
-            <div className="absolute top-4 right-4 flex items-center gap-1.5 sm:gap-2 z-20">
-              <button
-                onClick={() => setActiveView("couture")}
-                className={`px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase transition-colors border flex items-center gap-1.5 ${
-                  activeView === "couture"
-                    ? "bg-text-primary text-canvas-base border-text-primary shadow-md"
-                    : "bg-canvas-base/85 backdrop-blur-md text-text-secondary border-surface-border hover:text-text-primary"
-                }`}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-accent-zari animate-pulse"></span>
-                <span>COUTURE DRAPE</span>
-              </button>
-              <button
-                onClick={() => setActiveView("3d")}
-                className={`px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase transition-colors border ${
-                  activeView === "3d"
-                    ? "bg-text-primary text-canvas-base border-text-primary shadow-md"
-                    : "bg-canvas-base/85 backdrop-blur-md text-text-secondary border-surface-border hover:text-text-primary"
-                }`}
-              >
-                <span>3D SIMULATOR</span>
-              </button>
-              <button
-                onClick={() => setActiveView("macro")}
-                className={`px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase transition-colors border ${
-                  activeView === "macro"
-                    ? "bg-text-primary text-canvas-base border-text-primary shadow-md"
-                    : "bg-canvas-base/85 backdrop-blur-md text-text-secondary border-surface-border hover:text-text-primary"
-                }`}
-              >
-                <span>MACRO WEAVE</span>
-              </button>
-            </div>
 
             {/* 4K Video Trigger Pill */}
             <button
               onClick={() => setIsVideoModalOpen(true)}
-              className="absolute bottom-12 left-4 bg-text-primary/90 hover:bg-accent-zari text-canvas-base hover:text-text-primary px-3.5 py-2 rounded-xs border border-surface-border backdrop-blur-md text-[10px] font-mono tracking-widest uppercase flex items-center gap-2 transition-all shadow-lg z-10"
+              className="absolute bottom-12 left-4 bg-text-primary/90 hover:bg-accent-zari text-canvas-base hover:text-text-primary px-3.5 py-2 rounded-xs border border-surface-border backdrop-blur-md text-[10px] font-mono tracking-widest uppercase flex items-center gap-2 transition-all shadow-lg z-20"
             >
               <Video className="w-3.5 h-3.5" />
               <span>WATCH 4K DRAPE WALKTHROUGH</span>
             </button>
           </div>
 
-          {/* Perspective Bar & Lighting Mode Controls */}
-          {activeView === "couture" ? (
-            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-canvas-elevated border border-surface-border">
-              <span className="text-[10px] font-mono tracking-widest text-text-tertiary uppercase">
-                EDITORIAL PERSPECTIVE:
-              </span>
-              <div className="flex flex-wrap items-center gap-1.5">
-                {drapeAngles.map((angle, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setActiveAngleIndex(idx);
-                      if (idx !== 0) setActivePinId(null);
-                    }}
-                    className={`px-2.5 py-1 text-[10px] font-mono tracking-wider transition-all border ${
-                      activeAngleIndex === idx
-                        ? "bg-accent-zari text-canvas-base border-accent-zari font-medium shadow-sm"
-                        : "bg-canvas-base text-text-secondary border-surface-border hover:text-text-primary"
-                    }`}
-                  >
-                    {angle.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
+          {/* Under-Viewport Precision Controls Bar */}
+          {activeView === "tactile" ? (
             <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-canvas-elevated border border-surface-border">
               {/* Lighting Modes */}
               <div className="flex items-center gap-2">
@@ -380,25 +390,38 @@ export const ProductDetailClient: React.FC<ProductDetailClientProps> = ({
                 })}
               </div>
 
-              {/* Angle Quick Switch */}
+              <div className="text-[10px] font-mono text-accent-zari uppercase tracking-widest flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-zari"></span>
+                <span>VERLET PHYSICS ENGINE ACTIVE</span>
+              </div>
+            </div>
+          ) : activeView === "ritual" ? (
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-canvas-elevated border border-surface-border text-[10px] font-mono text-text-secondary uppercase tracking-widest">
               <div className="flex items-center gap-2">
-                {drapeAngles.map((angle, idx) => (
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-zari animate-pulse"></span>
+                <span className="text-text-primary font-medium">6-PHASE ANATOMICAL DRAPING RITUAL</span>
+              </div>
+              <span className="text-text-tertiary">MASTER WEAVER LINEAGE SPECIFICATION</span>
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-canvas-elevated border border-surface-border">
+              <span className="text-[10px] font-mono tracking-widest text-text-tertiary uppercase">
+                CARDINAL DRAPE ANGLES:
+              </span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {drapeFrames.map((frame, idx) => (
                   <button
                     key={idx}
                     onClick={() => {
                       setActiveAngleIndex(idx);
-                      setActiveView("couture");
                     }}
-                    className="relative w-10 h-12 border overflow-hidden transition-all border-surface-border opacity-70 hover:opacity-100"
-                    title={angle.label}
+                    className={`px-2.5 py-1 text-[10px] font-mono tracking-wider transition-all border ${
+                      activeAngleIndex === idx
+                        ? "bg-accent-zari text-canvas-base border-accent-zari font-medium shadow-sm"
+                        : "bg-canvas-base text-text-secondary border-surface-border hover:text-text-primary"
+                    }`}
                   >
-                    <Image
-                      src={angle.image || saree.images.hero}
-                      alt={angle.label}
-                      fill
-                      sizes="40px"
-                      className="object-cover"
-                    />
+                    {frame.angleDegrees}° · {frame.label.split(" ")[0]}
                   </button>
                 ))}
               </div>

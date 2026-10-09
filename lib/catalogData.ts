@@ -103,13 +103,13 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       "Milestone Anniversaries",
     ],
     images: {
-      hero: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
-      drape: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
-      macro: "https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=1600&auto=format&fit=crop",
-      detail: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
-      palluSpread: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
-      modelDrape: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
-      unboxing: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
+      hero: "/images/products/alabaster-model.jpg",
+      drape: "/images/products/alabaster-pleats.jpg",
+      macro: "/images/products/alabaster-weave.jpg",
+      detail: "/images/products/alabaster-weave.jpg",
+      palluSpread: "/images/products/alabaster-pallu.jpg",
+      modelDrape: "/images/products/alabaster-model.jpg",
+      unboxing: "/images/products/alabaster-model.jpg",
     },
     videoUrls: {
       drapeWalkthrough: "https://assets.mixkit.co/videos/preview/mixkit-folds-of-a-luxurious-white-fabric-41712-large.mp4",
@@ -120,7 +120,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       title: "Handspun Raw Matka Silk Blouse Piece (1.0m)",
       priceUSD: 180,
       fabric: "100% Hand-reeled Matka Raw Silk in Cast Iron Carbon",
-      image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop",
+      image: "/images/products/alabaster-blouse.jpg",
     },
     reviews: [
       {
@@ -134,7 +134,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
         height: "5'6\" with 3\" heels",
         reviewText:
           "The weight of this silk is extraordinary. Unlike modern powerloom silks that slip and slide, these pleats stayed impeccably anchored for 8 hours of ceremony. The matte zari looked regal in the morning temple sunlight.",
-        photoUrl: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=400&auto=format&fit=crop",
+        photoUrl: "/images/products/alabaster-pallu.jpg",
       },
       {
         id: "rev-02",
@@ -221,13 +221,13 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       "Summer Wedding Soirée",
     ],
     images: {
-      hero: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
-      drape: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
-      macro: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1600&auto=format&fit=crop",
-      detail: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
-      palluSpread: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
-      modelDrape: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
-      unboxing: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
+      hero: "/images/products/sage-model.jpg",
+      drape: "/images/products/sage-pleats.jpg",
+      macro: "/images/products/sage-weave.jpg",
+      detail: "/images/products/sage-weave.jpg",
+      palluSpread: "/images/products/sage-pallu.jpg",
+      modelDrape: "/images/products/sage-model.jpg",
+      unboxing: "/images/products/sage-model.jpg",
     },
     videoUrls: {
       drapeWalkthrough: "https://assets.mixkit.co/videos/preview/mixkit-folds-of-a-luxurious-white-fabric-41712-large.mp4",
@@ -238,7 +238,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       title: "Semi-Sheer Organza Blouse Piece with Crepe Lining (1.0m)",
       priceUSD: 160,
       fabric: "Pure Organza silk paired with 40g mulberry crepe lining",
-      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=600&auto=format&fit=crop",
+      image: "/images/products/sage-blouse.jpg",
     },
     reviews: [
       {
@@ -326,13 +326,13 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       "Gallery Openings",
     ],
     images: {
-      hero: "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1600&auto=format&fit=crop",
-      drape: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
-      macro: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
-      detail: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
-      palluSpread: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1600&auto=format&fit=crop",
-      modelDrape: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
-      unboxing: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
+      hero: "/images/products/obsidian-veil-model.jpg",
+      drape: "/images/products/obsidian-veil-pleats.jpg",
+      macro: "/images/products/obsidian-veil-weave.jpg",
+      detail: "/images/products/obsidian-veil-weave.jpg",
+      palluSpread: "/images/products/obsidian-veil-pallu.jpg",
+      modelDrape: "/images/products/obsidian-veil-model.jpg",
+      unboxing: "/images/products/obsidian-veil-model.jpg",
     },
     videoUrls: {
       drapeWalkthrough: "https://assets.mixkit.co/videos/preview/mixkit-folds-of-a-luxurious-white-fabric-41712-large.mp4",
@@ -343,7 +343,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       title: "Coordinated Dual-Tone Silk Satin Blouse Piece (1.0m)",
       priceUSD: 195,
       fabric: "Pure 100g Mulberry Silk Satin in Charcoal",
-      image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=600&auto=format&fit=crop",
+      image: "/images/products/obsidian-veil-blouse.jpg",
     },
     reviews: [
       {
@@ -431,13 +431,13 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       "Poetic Garden Luncheons",
     ],
     images: {
-      hero: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
-      drape: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
-      macro: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600&auto=format&fit=crop",
-      detail: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1600&auto=format&fit=crop",
-      palluSpread: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600&auto=format&fit=crop",
-      modelDrape: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=1600&auto=format&fit=crop",
-      unboxing: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1200&auto=format&fit=crop",
+      hero: "/images/products/sand-model.jpg",
+      drape: "/images/products/sand-pleats.jpg",
+      macro: "/images/products/sand-weave.jpg",
+      detail: "/images/products/sand-weave.jpg",
+      palluSpread: "/images/products/sand-pallu.jpg",
+      modelDrape: "/images/products/sand-model.jpg",
+      unboxing: "/images/products/sand-model.jpg",
     },
     videoUrls: {
       drapeWalkthrough: "https://assets.mixkit.co/videos/preview/mixkit-folds-of-a-luxurious-white-fabric-41712-large.mp4",
@@ -448,7 +448,7 @@ export const SAREE_COLLECTION: SareeProduct[] = [
       title: "Handspun Slub Tussar Raw Silk Length (1.0m)",
       priceUSD: 175,
       fabric: "100% Hand-reeled Tussar Slub Silk in Wild Cocoon Sand",
-      image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop",
+      image: "/images/products/sand-blouse.jpg",
     },
     reviews: [
       {

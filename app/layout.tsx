@@ -62,6 +62,7 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
       { url: "/favicon.ico" },
     ],
     apple: [
@@ -84,7 +85,7 @@ export default function RootLayout({
     "@type": "Organization",
     name: "Rami Studio",
     url: "https://ramistudio.luxury",
-    logo: "https://ramistudio.luxury/icon.svg",
+    logo: "https://ramistudio.luxury/logo.svg",
     description: "Haute handloom maison preserving living textile architecture, pure Mulberry silk, and real silver zari.",
     address: {
       "@type": "PostalAddress",

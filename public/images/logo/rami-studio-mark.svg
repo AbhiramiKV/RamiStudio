@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480" fill="none">
+  <title>Rami Studio — Paisley Mark</title>
+  <g id="mark" stroke="#0C0B0A" stroke-width="2" stroke-linecap="round">
+    <path d="M240 70 C320 80 345 170 305 235 C275 285 205 295 185 250 C170 215 205 190 232 208 C255 224 248 252 228 250"/>
+    <path d="M240 100 C298 108 318 172 288 220" stroke-opacity="0.6"/>
+    <circle cx="262" cy="150" r="5" fill="#0C0B0A" stroke="none"/>
+    <circle cx="280" cy="182" r="4" fill="#0C0B0A" stroke="none"/>
+    <circle cx="268" cy="214" r="3" fill="#0C0B0A" stroke="none"/>
+  </g>
+</svg>
